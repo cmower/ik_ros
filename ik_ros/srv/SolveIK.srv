@@ -1,0 +1,5 @@
+float64[] setup
+---
+float64[] solution
+string info
+bool success
