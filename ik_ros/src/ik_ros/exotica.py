@@ -29,8 +29,10 @@ class Exotica(IK):
         self.task_maps = self.problem.get_task_maps()
         self._joint_names = self.scene.get_controlled_joint_names()
 
+
     def solve(self):
-        self._solution = self.solver.solve()[0]
+        self._solution = self.solver.solve()[0].tolist()
+
 
     def joint_names(self):
         return self._joint_names
