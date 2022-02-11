@@ -1,6 +1,14 @@
 import rospy
 import pyexotica as exo
 import exotica_core_task_maps_py
+"""
+
+This provides a base-class for the EXOTica interface. In order to
+define the setup for each call to the solver, you need to provide a
+defined reset method.
+
+
+"""
 
 class Exotica(IK):
 
