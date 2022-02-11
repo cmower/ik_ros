@@ -46,15 +46,15 @@ class TracIK(IK):
 
 
     def reset(self, setup):
-        """Reset IK problem/solver. Optionally provide goal in interface."""
-        self.x = setup[0]
-        self.y = setup[1]
-        self.z = setup[2]
-        self.rx = setup[3]
-        self.ry = setup[4]
-        self.rz = setup[5]
-        self.rw = setup[6]
-        self.qinit = setup[7:]
+        """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray."""
+        self.x = setup.data[0]
+        self.y = setup.data[1]
+        self.z = setup.data[2]
+        self.rx = setup.data[3]
+        self.ry = setup.data[4]
+        self.rz = setup.data[5]
+        self.rw = setup.data[6]
+        self.qinit = setup.data[7:]
 
 
     def solve(self):
