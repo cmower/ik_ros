@@ -4,7 +4,7 @@ from ik_ros.trac_ik import TrackIK
 from ik_ros.ik import IKNode
 
 def main():
-    IKNode('trac_ik', TracIK).spin()
+    IKNode(TracIK).spin()
 
 if __name__ == '__main__':
     main()
