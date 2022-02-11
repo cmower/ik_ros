@@ -74,8 +74,3 @@ class TracIK(IK):
     def solution(self):
         """Returns the solution for the previous call to solve as a Python list."""
         return self._solution
-
-
-    def publish(self):
-        """Publishes the IK solution to ROS."""
-        self.pub.publish(Float64MultiArray(data=self._solution))
