@@ -15,6 +15,7 @@ class IK:
 
     def did_recieve_setup(self):
         """Returns false when a setup has not been recieved yet, true otherwise."""
+        raise NotImplemented
 
     def solve(self):
         """Calls the IK solver."""
