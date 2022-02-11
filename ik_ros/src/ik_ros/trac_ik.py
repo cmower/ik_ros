@@ -36,6 +36,7 @@ class TracIK(IK):
         self.rw = None
         self.qinit = None
         self._solution = None
+        self._did_recieve_setup = False
 
         # Get urdf as string
         with open(replace_package(urdf_filename), 'r') as f:
@@ -55,6 +56,10 @@ class TracIK(IK):
         self.rz = setup.data[5]
         self.rw = setup.data[6]
         self.qinit = setup.data[7:]
+        self._did_recieve_setup = True
+
+    def did_recieve_setup(self):
+        return self._did_recieve_setup
 
 
     def solve(self):
