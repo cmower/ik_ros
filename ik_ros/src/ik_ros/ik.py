@@ -17,6 +17,9 @@ class IK:
         """Calls the IK solver."""
         raise NotImplemented
 
+    def joint_names(self):
+        """Return a list of joint names in same order as solution."""
+        raise NotImplemented
 
     def solution(self):
         """Returns the solution for the previous call to solve as a Python list."""
