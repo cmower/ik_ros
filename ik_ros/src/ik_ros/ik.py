@@ -1,7 +1,8 @@
 import rospy
 import tf2_ros
 from std_msgs.msg import Float64MultiArray
-from ik_ros.srv import ToggleIK, ToggleIKResponse
+from sensor_msgs.msg import JointState
+from std_srvs.srv import SetBool, SetBoolResponse
 from ik_ros.srv import SolveIK, SolveIKResponse
 
 
@@ -40,16 +41,16 @@ class IKNode:
         self.streaming_timer = None
         self.streaming_sub = None
         self.subscriber = None
-        rospy.Service(name + '/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
-        rospy.Service(name + '/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
+        rospy.Service(name + '/toggle_ik_streaming', SetBool, self.service_toggle_ik_streaming)
+        rospy.Service(name + '/toggle_ik_callback', SetBool, self.service_toggle_ik_callback)
         rospy.Service(name + '/solve_ik', SolveIK, self.service_solve_ik)
 
 
     def service_toggle_ik_streaming(self, req):
-        info = ''
+        message = ''
         success = True
         try:
-            if req.switch:
+            if req.data:
                 self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
                 self.streaming_sub = rospy.Subscriber(req.topic, Float64MultiArray, self.ik.reset)
             else:
@@ -58,28 +59,28 @@ class IKNode:
                 self.streaming_sub = None
                 self.streaming_timer = None
         except Exception as e:
-            info = "toggle_ik_streaming failed: "+str(e)
+            message = "toggle_ik_streaming failed: "+str(e)
             success = False
-        return ToggleIKResponse(info=info, success=success)
+        return SetBoolResponse(message=message, success=success)
 
 
     def service_toggle_ik_callback(self, req):
-        info = ''
+        message = ''
         success = True
         try:
-            if req.switch:
+            if req.data:
                 self.subscriber = rospy.Subscriber(req.topic, Float64MultiArray, self.callback)
             else:
                 self.subscriber.unregister()
                 self.subscriber = None
         except Exception as e:
-            info = "toggle_ik_callback failed: "+str(e)
+            message = "toggle_ik_callback failed: "+str(e)
             success = False
-        return ToggleIKResponse(info=info, success=success)
+        return SetBoolResponse(message=message, success=success)
 
 
     def service_solve_ik(self, req):
-        info = ''
+        message = ''
         success = True
         solution = []
         try:
@@ -87,9 +88,9 @@ class IKNode:
             self.ik.solve()
             solution = self.ik.solution()
         except Exception as e:
-            info = "solve ik failed: "+str(e)
+            message = "solve ik failed: "+str(e)
             success = False
-        return SolveIKResponse(info=info, success=success, solution=solution)
+        return SolveIKResponse(message=message, success=success, solution=solution)
 
 
     def stream(self, event):
