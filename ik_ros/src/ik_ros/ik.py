@@ -10,7 +10,7 @@ class IK:
 
 
     def reset(self, setup):
-        """Reset IK problem/solver, must be called prior to solve."""
+        """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray."""
         raise NotImplemented
 
     def solve(self):
