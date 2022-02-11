@@ -26,11 +26,6 @@ class IK:
         raise NotImplemented
 
 
-    def publish(self):
-        """Publishes the IK solution to ROS."""
-        raise NotImplemented
-
-
 class IKNode:
 
     # toggle_ik_streaming: means solutions will be published at a given frequency
@@ -44,6 +39,7 @@ class IKNode:
         self.streaming_timer = None
         self.streaming_sub = None
         self.subscriber = None
+        self.publisher = rospy.Publisher('joint_states/target', JointState, queue_size=10)
         rospy.Service(name + '/toggle_ik_streaming', SetBool, self.service_toggle_ik_streaming)
         rospy.Service(name + '/toggle_ik_callback', SetBool, self.service_toggle_ik_callback)
         rospy.Service(name + '/solve_ik', SolveIK, self.service_solve_ik)
@@ -96,10 +92,16 @@ class IKNode:
         return SolveIKResponse(message=message, success=success, solution=solution)
 
 
+    def publish(self, n, q):
+        msg = JointState(name=n, position=q)
+        msg.header.stamp = rospy.Time.now()
+        self.publisher.publish(msg)
+
+
     def stream(self, event):
         try:
             self.ik.solve()
-            self.ik.publish()
+            self.publish(self.ik.joint_names, self.ik.solution())
         except Exception as e:
             rospy.logwarn('%s IK failed during streaming: '+str(e))
 
@@ -108,7 +110,7 @@ class IKNode:
         try:
             self.ik.reset(msg)
             self.ik.solve()
-            self.ik.publish()
+            self.publish(self.ik.joint_names, self.ik.solution())
         except Exception as e:
             rospy.logwarn('%s IK failed in callback: '+str(e))
 
