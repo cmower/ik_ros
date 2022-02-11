@@ -13,6 +13,9 @@ class IK:
         """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray."""
         raise NotImplemented
 
+    def did_recieve_setup(self):
+        """Returns false when a setup has not been recieved yet, true otherwise."""
+
     def solve(self):
         """Calls the IK solver."""
         raise NotImplemented
@@ -98,6 +101,8 @@ class IKNode:
 
 
     def stream(self, event):
+        if not self.ik.did_recieve_setup():
+            return
         try:
             self.ik.solve()
             self.publish(self.ik.joint_names(), self.ik.solution())
