@@ -101,7 +101,7 @@ class IKNode:
     def stream(self, event):
         try:
             self.ik.solve()
-            self.publish(self.ik.joint_names, self.ik.solution())
+            self.publish(self.ik.joint_names(), self.ik.solution())
         except Exception as e:
             rospy.logwarn('%s IK failed during streaming: '+str(e))
 
@@ -110,7 +110,7 @@ class IKNode:
         try:
             self.ik.reset(msg)
             self.ik.solve()
-            self.publish(self.ik.joint_names, self.ik.solution())
+            self.publish(self.ik.joint_names(), self.ik.solution())
         except Exception as e:
             rospy.logwarn('%s IK failed in callback: '+str(e))
 
