@@ -32,17 +32,16 @@ class IKNode:
     # toggle_ik_callback: means solutions will be published when setup recieved
     # solve_ik: returns solution in service response
 
-    def __init__(self, name, IKClass):
-        rospy.init_node(name + '_node')
-        self.name = name
+    def __init__(self, IKClass):
+        rospy.init_node('ik_ros_node')
         self.ik = IKClass()
         self.streaming_timer = None
         self.streaming_sub = None
         self.subscriber = None
         self.publisher = rospy.Publisher('joint_states/target', JointState, queue_size=10)
-        rospy.Service(name + '/toggle_ik_streaming', SetBool, self.service_toggle_ik_streaming)
-        rospy.Service(name + '/toggle_ik_callback', SetBool, self.service_toggle_ik_callback)
-        rospy.Service(name + '/solve_ik', SolveIK, self.service_solve_ik)
+        rospy.Service('/ik_ros/toggle_ik_streaming', SetBool, self.service_toggle_ik_streaming)
+        rospy.Service('/ik_ros/toggle_ik_callback', SetBool, self.service_toggle_ik_callback)
+        rospy.Service('/ik_ros/solve_ik', SolveIK, self.service_solve_ik)
 
 
     def service_toggle_ik_streaming(self, req):
