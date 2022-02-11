@@ -7,6 +7,8 @@ from .ik import IK
 
 class TracIK(IK):
 
+    """Interface to trac_ik: https://bitbucket.org/traclabs/trac_ik.git"""
+
 
     def __init__(self):
 
