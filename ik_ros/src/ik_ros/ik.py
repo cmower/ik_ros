@@ -33,7 +33,7 @@ class IKNode:
     # solve_ik: returns solution in service response
 
     def __init__(self, IKClass):
-        rospy.init_node('ik_ros_node')
+        rospy.init_node('ik_ros_node', anonymous=True)
         self.ik = IKClass()
         self.streaming_timer = None
         self.streaming_sub = None
