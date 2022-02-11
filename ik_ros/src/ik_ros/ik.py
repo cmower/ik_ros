@@ -2,7 +2,7 @@ import rospy
 import tf2_ros
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
-from std_srvs.srv import SetBool, SetBoolResponse
+from std_srvs.srv import ToggleIK, ToggleIKResponse
 from ik_ros.srv import SolveIK, SolveIKResponse
 
 
@@ -43,16 +43,17 @@ class IKNode:
         self.streaming_sub = None
         self.subscriber = None
         self.publisher = rospy.Publisher('joint_states/target', JointState, queue_size=10)
-        rospy.Service('/ik_ros/toggle_ik_streaming', SetBool, self.service_toggle_ik_streaming)
-        rospy.Service('/ik_ros/toggle_ik_callback', SetBool, self.service_toggle_ik_callback)
-        rospy.Service('/ik_ros/solve_ik', SolveIK, self.service_solve_ik)
+        name = rospy.get_param('~ik_name')
+        rospy.Service('/ik_ros/%s/toggle_ik_streaming' % name, ToggleIK, self.service_toggle_ik_streaming)
+        rospy.Service('/ik_ros/%s/toggle_ik_callback' % name, ToggleIK, self.service_toggle_ik_callback)
+        rospy.Service('/ik_ros/%s/solve_ik' % name, SolveIK, self.service_solve_ik)
 
 
     def service_toggle_ik_streaming(self, req):
         message = ''
         success = True
         try:
-            if req.data:
+            if req.switch:
                 self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
                 self.streaming_sub = rospy.Subscriber(req.topic, Float64MultiArray, self.ik.reset)
             else:
@@ -63,14 +64,14 @@ class IKNode:
         except Exception as e:
             message = "toggle_ik_streaming failed: "+str(e)
             success = False
-        return SetBoolResponse(message=message, success=success)
+        return ToggleIKResponse(message=message, success=success)
 
 
     def service_toggle_ik_callback(self, req):
         message = ''
         success = True
         try:
-            if req.data:
+            if req.switch:
                 self.subscriber = rospy.Subscriber(req.topic, Float64MultiArray, self.callback)
             else:
                 self.subscriber.unregister()
@@ -78,7 +79,7 @@ class IKNode:
         except Exception as e:
             message = "toggle_ik_callback failed: "+str(e)
             success = False
-        return SetBoolResponse(message=message, success=success)
+        return ToggleIKResponse(message=message, success=success)
 
 
     def service_solve_ik(self, req):
