@@ -10,7 +10,7 @@ class IK:
 
 
     def reset(self, setup):
-        """Reset IK problem/solver, must be called prior to solve. Optionally provide goal in interface."""
+        """Reset IK problem/solver, must be called prior to solve."""
         raise NotImplemented
 
     def solve(self):
