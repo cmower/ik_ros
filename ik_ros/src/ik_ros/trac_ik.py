@@ -44,9 +44,6 @@ class TracIK(IK):
         # Setup IK solver
         self.ik_solver = trac_ik.IK(base_link, tip_link, timeout=timeout, epsilon=epsilon, solve_type=solve_type, urdf_string=urdf_string)
 
-        # Setup publisher
-        self.pub = rospy.Publisher('ik/trac_ik/joint_state', Float64MultiArray, queue_size=10)
-
 
     def reset(self, setup):
         """Reset IK problem/solver. Optionally provide goal in interface."""
