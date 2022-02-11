@@ -68,6 +68,11 @@ class TracIK(IK):
         )
 
 
+    def joint_names(self):
+        """Return a list of joint names in same order as solution."""
+        return self.ik_solver.joint_names
+
+
     def solution(self):
         """Returns the solution for the previous call to solve as a Python list."""
         return self._solution
