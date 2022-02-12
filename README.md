@@ -18,7 +18,7 @@ interfaces exist already:
 
 You must implement a class that inherits from the `IK` class found in
 `ik_ros/src/ik_ros/ik.py`. This must define several methods:
-* `reset`: reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray
+* `reset`: reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type `std_msgs/Float64MultiArray`
 * `did_recieve_setup`: returns false when a setup has not been recieved yet, true otherwise.
 * `solve`: calls the IK solver.
 * `joint_names`: return a list of joint names in same order as solution.
