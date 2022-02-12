@@ -41,7 +41,7 @@ The following sections apply to all IK interfaces.
 
 ### Subscribed topics
 
-* `ik_ros/setup` ([std_msgs/Float64MultiArray](http://docs.ros.org/en/api/std_msgs/html/msg/Float64MultiArray.html))
+* `setup` ([std_msgs/Float64MultiArray](http://docs.ros.org/en/api/std_msgs/html/msg/Float64MultiArray.html))
 
     Goal and parameters for the IK problem. The format for this is defined in the `reset` method used in the IK interface.
 
