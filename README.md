@@ -27,13 +27,13 @@ You must implement a class that inherits from the `IK` class found in
 Add the new script to `ik_ros/src/ik_ros`, and make sure to import the
 class in `ik_ros/scripts/ik_node.py`.
 
-# Node
+# IK node
 
-There is only one node in this repository. However, the parameters
-depend on the given command line arguments that specify the IK
-interface. Note, the first section below applies to all IK interfaces,
-following describes the parameters required for each individual IK
-interface and the format for the setup message.
+For the main `ik_node.py`, the parameters depend on the given command
+line arguments that specify the IK interface. Note, the first section
+below applies to all IK interfaces, following describes the parameters
+required for each individual IK interface and the format for the setup
+message. Other nodes included in this package are described below.
 
 EXOTica specifies the IK using an XML configuration file. This means
 that the `reset` method must be tailored to each configuration. A base
@@ -152,3 +152,32 @@ Note, in the following `NDOF` stands for the number of degrees of freedom.
 * `setup.data`, when `len(setup.data) = 3`: position
 * `setup.data`, when `len(setup.data) = 6`: position + rotation (as Euler angles)
 * `setup.data`, when `len(setup.data) = 7`: position + rotation (as quaternion)
+
+# Other Nodes
+
+## `tf_to_floatarray_node.py`
+
+This node does not subscribe to any topic. It listens for a given
+transform broadcasted using the [`tf2`](http://wiki.ros.org/tf2)
+library.
+
+### Published topics
+
+* `transform` ([std_msgs/Float64MultiArray](http://docs.ros.org/en/api/std_msgs/html/msg/Float64MultiArray.html))
+
+    A transform with format `[x,y,z,rx,ry,rz,rw]`.
+
+### Parameters
+
+* `~child_frame_id` (string)
+
+    The child frame for the transform.
+
+
+* `~parent_frame_id` (string)
+
+    The parent frame for the transform.
+
+* `~hz` (integer, default: 50)
+
+    The sampling frequency in Herts.

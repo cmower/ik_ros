@@ -162,6 +162,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/ik_node.py
+  scripts/tf_to_floatarray_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
