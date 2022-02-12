@@ -36,6 +36,8 @@ class IKNode:
     # toggle_ik_callback: means solutions will be published when setup recieved
     # solve_ik: returns solution in service response
 
+    sub_topic = 'setup'
+
     def __init__(self, IKClass):
         rospy.init_node('ik_ros_node', anonymous=True)
         self.ik = IKClass()
@@ -43,10 +45,9 @@ class IKNode:
         self.streaming_sub = None
         self.subscriber = None
         self.publisher = rospy.Publisher('joint_states/target', JointState, queue_size=10)
-        name = rospy.get_param('~ik_name')
-        rospy.Service('/ik_ros/%s/toggle_ik_streaming' % name, ToggleIK, self.service_toggle_ik_streaming)
-        rospy.Service('/ik_ros/%s/toggle_ik_callback' % name, ToggleIK, self.service_toggle_ik_callback)
-        rospy.Service('/ik_ros/%s/solve_ik' % name, SolveIK, self.service_solve_ik)
+        rospy.Service('/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
+        rospy.Service('/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
+        rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
 
 
     def service_toggle_ik_streaming(self, req):
@@ -55,7 +56,7 @@ class IKNode:
         try:
             if req.switch:
                 self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
-                self.streaming_sub = rospy.Subscriber(req.topic, Float64MultiArray, self.ik.reset)
+                self.streaming_sub = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.ik.reset)
                 rospy.loginfo('turned on ik streaming')
             else:
                 self.streaming_timer.shutdown()
@@ -74,7 +75,7 @@ class IKNode:
         success = True
         try:
             if req.switch:
-                self.subscriber = rospy.Subscriber(req.topic, Float64MultiArray, self.callback)
+                self.subscriber = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.callback)
                 rospy.loginfo('turned on ik callback')
             else:
                 self.subscriber.unregister()
