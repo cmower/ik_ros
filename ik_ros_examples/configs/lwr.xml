@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<IKSolverDemoConfig>
+
+  <IKSolver Name="MySolver">
+    <MaxIterations>1</MaxIterations>
+  </IKSolver>
+
+  <UnconstrainedEndPoseProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>arm</JointGroup>
+        <URDF>{exotica_examples}/resources/robots/lwr_simplified.urdf</URDF>
+        <SRDF>{exotica_examples}/resources/robots/lwr_simplified.srdf</SRDF>
+      </Scene>
+    </PlanningScene>
+
+    <Maps>
+      <EffFrame Name="Pose">
+        <EndEffector>
+            <Frame Link="lwr_arm_6_link"/>
+        </EndEffector>
+      </EffFrame>
+    </Maps>
+
+    <Cost>
+      <Task Task="Pose"/>
+    </Cost>
+
+    <StartState>0 0 0 0 0 0 0</StartState>
+    <W> 7 6 5 4 3 2 1 </W>
+  </UnconstrainedEndPoseProblem>
+
+</IKSolverDemoConfig>

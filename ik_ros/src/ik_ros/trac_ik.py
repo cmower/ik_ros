@@ -7,6 +7,8 @@ from .ik import IK
 
 class TracIK(IK):
 
+    """Interface to trac_ik: https://bitbucket.org/traclabs/trac_ik.git"""
+
 
     def __init__(self):
 
@@ -34,6 +36,7 @@ class TracIK(IK):
         self.rw = None
         self.qinit = None
         self._solution = None
+        self._did_recieve_setup = False
 
         # Get urdf as string
         with open(replace_package(urdf_filename), 'r') as f:
@@ -42,20 +45,21 @@ class TracIK(IK):
         # Setup IK solver
         self.ik_solver = trac_ik.IK(base_link, tip_link, timeout=timeout, epsilon=epsilon, solve_type=solve_type, urdf_string=urdf_string)
 
-        # Setup publisher
-        self.pub = rospy.Publisher('ik/trac_ik/joint_state', Float64MultiArray, queue_size=10)
-
 
     def reset(self, setup):
-        """Reset IK problem/solver. Optionally provide goal in interface."""
-        self.x = setup[0]
-        self.y = setup[1]
-        self.z = setup[2]
-        self.rx = setup[3]
-        self.ry = setup[4]
-        self.rz = setup[5]
-        self.rw = setup[6]
-        self.qinit = setup[7:]
+        """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray."""
+        self.x = setup.data[0]
+        self.y = setup.data[1]
+        self.z = setup.data[2]
+        self.rx = setup.data[3]
+        self.ry = setup.data[4]
+        self.rz = setup.data[5]
+        self.rw = setup.data[6]
+        self.qinit = setup.data[7:]
+        self._did_recieve_setup = True
+
+    def did_recieve_setup(self):
+        return self._did_recieve_setup
 
 
     def solve(self):
@@ -69,11 +73,11 @@ class TracIK(IK):
         )
 
 
+    def joint_names(self):
+        """Return a list of joint names in same order as solution."""
+        return self.ik_solver.joint_names
+
+
     def solution(self):
         """Returns the solution for the previous call to solve as a Python list."""
         return self._solution
-
-
-    def publish(self):
-        """Publishes the IK solution to ROS."""
-        self.pub.publish(Float64MultiArray(data=self._solution))
