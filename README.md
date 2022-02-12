@@ -35,6 +35,10 @@ interface. Note, the first section below applies to all IK interfaces,
 following describes the parameters required for each individual IK
 interface and the format for the setup message.
 
+EXOTica specifies the IK using an XML configuration file. This means
+that the `reset` method must be tailored to each configuration. A base
+EXOTica class is implemented in `ik_ros/src/ik_ros/exotica.py`.
+
 ## `ik_node.py`
 
 The following sections apply to all IK interfaces.
