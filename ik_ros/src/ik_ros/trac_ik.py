@@ -1,4 +1,5 @@
 import rospy
+import numpy as np
 from std_msgs.msg import Float64MultiArray
 import trac_ik_python.trac_ik as trac_ik
 from ros_pybullet_interface.config import replace_package
@@ -16,8 +17,8 @@ class TracIK(IK):
         base_link = rospy.get_param('~base_link')
         tip_link = rospy.get_param('~tip_link')
         urdf_filename = rospy.get_param('~urdf_filename')
-        timeout = rospy.get_param('~timeout', 0.005)
-        epsilon = rospy.get_param('~epsilon', 1e-5)
+        timeout = np.clip(rospy.get_param('~timeout', 0.005), np.inf)
+        epsilon = np.clip(rospy.get_param('~epsilon', 1e-5), np.inf)
         solve_type = rospy.get_param('~solve_type', "Speed")
         self.bx=rospy.get_param('~bx', 1e-5)
         self.by=rospy.get_param('~by', 1e-5)
