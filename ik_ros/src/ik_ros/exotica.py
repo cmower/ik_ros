@@ -12,7 +12,7 @@ defined reset method.
 
 """
 
-class Exotica(IK):
+class ExoticaBase(IK):
 
     """Interface to Exotica: https://github.com/ipab-slmc/exotica"""
 

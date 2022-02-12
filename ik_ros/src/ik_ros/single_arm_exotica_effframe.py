@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import rospy
-from ik_ros.exotica import ExoticaBase
-from ik_ros.ik import IKNode
+from .exotica import ExoticaBase
 
 
-class Exotica(ExoticaBase):
+class SingleArmExoticaEffFrame(ExoticaBase):
 
     def __init__(self):
         ExoticaBase.__init__(self)
@@ -19,11 +18,3 @@ class Exotica(ExoticaBase):
 
     def did_recieve_setup(self):
         return self._did_recieve_setup
-
-
-def main():
-    IKNode(Exotica).spin()
-
-
-if __name__ == '__main__':
-    main()
