@@ -52,11 +52,13 @@ class IKNode:
             if req.switch:
                 self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
                 self.streaming_sub = rospy.Subscriber(req.topic, Float64MultiArray, self.ik.reset)
+                rospy.loginfo('turned on ik streaming')
             else:
                 self.streaming_timer.shutdown()
                 self.streaming_sub.unregister()
                 self.streaming_sub = None
                 self.streaming_timer = None
+                rospy.loginfo('turned off ik streaming')
         except Exception as e:
             info = "toggle_ik_streaming failed: "+str(e)
             success = False
@@ -69,9 +71,11 @@ class IKNode:
         try:
             if req.switch:
                 self.subscriber = rospy.Subscriber(req.topic, Float64MultiArray, self.callback)
+                rospy.loginfo('turned on ik callback')
             else:
                 self.subscriber.unregister()
                 self.subscriber = None
+                rospy.loginfo('turned off ik callback')
         except Exception as e:
             info = "toggle_ik_callback failed: "+str(e)
             success = False
