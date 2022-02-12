@@ -1,5 +1,4 @@
 bool switch
-string topic
 UInt64 hz
 ---
 string info
