@@ -22,7 +22,6 @@ class ExoticaBase(IK):
 
         # Setup class attributes
         self._solution = None
-        self._did_recieve_setup = False  # NOTE: this must be modified in reset method
 
         # Get ROS parameters
         xml_filename = rospy.get_param('~exotica_xml_filename')
@@ -43,10 +42,6 @@ class ExoticaBase(IK):
         self.task_maps = self.problem.get_task_maps()
         self._joint_names = self.scene.get_controlled_joint_names()
         # print(self.scene.get_model_link_names())
-
-
-    def did_recieve_setup(self):
-        return self._did_recieve_setup
 
 
     def solve(self):
