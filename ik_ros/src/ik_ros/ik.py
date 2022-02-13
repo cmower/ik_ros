@@ -2,7 +2,7 @@ import rospy
 import tf2_ros
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
-from std_srvs.srv import ToggleIK, ToggleIKResponse
+from ik_ros.srv import ToggleIK, ToggleIKResponse
 from ik_ros.srv import SolveIK, SolveIKResponse
 
 
@@ -42,49 +42,79 @@ class IKNode:
         rospy.init_node('ik_ros_node', anonymous=True)
         self.ik = IKClass()
         self.streaming_timer = None
-        self.streaming_sub = None
-        self.subscriber = None
+        self.streaming_subscriber = None
         self.publisher = rospy.Publisher('joint_states/target', JointState, queue_size=10)
+        self.is_ik_streaming = False
+        self.is_ik_callback = False
         rospy.Service('/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
         rospy.Service('/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
         rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
 
 
     def service_toggle_ik_streaming(self, req):
-        message = ''
-        success = True
-        try:
-            if req.switch:
-                self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
-                self.streaming_sub = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.ik.reset)
-                rospy.loginfo('turned on ik streaming')
-            else:
-                self.streaming_timer.shutdown()
-                self.streaming_sub.unregister()
-                self.streaming_sub = None
-                self.streaming_timer = None
-                rospy.loginfo('turned off ik streaming')
-        except Exception as e:
-            message = "toggle_ik_streaming failed: "+str(e)
-            success = False
+        if req.switch:
+            success, message = self.turn_on_ik_streaming(req)
+        else:
+            success, message = self.turn_off_ik_streaming(req)
         return ToggleIKResponse(message=message, success=success)
 
+    def turn_on_ik_streaming(self, req):
+        success = True
+        message = ''
+        if not self.is_ik_streaming:
+            self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
+            self.streaming_subscriber = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.ik.reset)
+            self.is_ik_streaming = True
+            rospy.loginfo('turned on ik streaming')
+        else:
+            success = False
+            message = 'user attempted to turn on ik streaming, but it is already running!'
+            rospy.logerr(message)
+        return success, message
+
+    def turn_off_ik_streaming(self, req):
+        success = True
+        message = ''
+        if self.is_ik_streaming:
+            self.streaming_timer.shutdown()
+            self.streaming_subscriber.unregister()
+            self.streaming_timer = None
+            self.streaming_subscriber = None
+            self.is_ik_streaming = False
+            rospy.loginfo('turned off ik streaming')
+        else:
+            success = False
+            message = 'user attempted to turn off ik streaming, but it is not running!'
+            rospy.logerr(message)
+        return success, message
+
+    # def service_toggle_ik_callback(self, req):
+    #     message = ''
+    #     success = True
+    #     try:
+    #         if req.switch:
+    #             self.subscriber = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.callback)
+    #             rospy.loginfo('turned on ik callback')
+    #         else:
+    #             self.subscriber.unregister()
+    #             self.subscriber = None
+    #             rospy.loginfo('turned off ik callback')
+    #     except Exception as e:
+    #         message = "toggle_ik_callback failed: "+str(e)
+    #         success = False
+    #         rospy.logerr(message)
+    #     return ToggleIKResponse(message=message, success=success)
 
     def service_toggle_ik_callback(self, req):
-        message = ''
-        success = True
-        try:
-            if req.switch:
-                self.subscriber = rospy.Subscriber(self.sub_topic, Float64MultiArray, self.callback)
-                rospy.loginfo('turned on ik callback')
-            else:
-                self.subscriber.unregister()
-                self.subscriber = None
-                rospy.loginfo('turned off ik callback')
-        except Exception as e:
-            message = "toggle_ik_callback failed: "+str(e)
-            success = False
+        if req.switch:
+            success, message = self.turn_on_ik_callback()
+        else:
+            success, message = self.turn_off_ik_callback()
         return ToggleIKResponse(message=message, success=success)
+
+
+    def turn_on_ik_callback(self, req):
+        pass
 
 
     def service_solve_ik(self, req):
@@ -114,7 +144,7 @@ class IKNode:
             self.ik.solve()
             self.publish(self.ik.joint_names(), self.ik.solution())
         except Exception as e:
-            rospy.logwarn('%s IK failed during streaming: '+str(e))
+            rospy.logwarn('IK failed during streaming: '+str(e))
 
 
     def callback(self, msg):
@@ -123,7 +153,7 @@ class IKNode:
             self.ik.solve()
             self.publish(self.ik.joint_names(), self.ik.solution())
         except Exception as e:
-            rospy.logwarn('%s IK failed in callback: '+str(e))
+            rospy.logwarn('IK failed in callback: '+str(e))
 
 
     def spin(self):
