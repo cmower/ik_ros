@@ -1,5 +1,5 @@
 bool switch
-UInt64 hz
+std_msgs/UInt64 hz
 ---
-string info
+string message
 bool success
