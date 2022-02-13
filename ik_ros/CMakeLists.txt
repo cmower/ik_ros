@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tf2
   tf2_ros
+  sensor_msgs
   message_generation
 )
 
@@ -17,7 +18,7 @@ add_service_files(
   )
 
 generate_messages(
-  DEPENDENCIES std_msgs
+  DEPENDENCIES std_msgs sensor_msgs
 )
 
 catkin_package(
