@@ -1,0 +1,5 @@
+name: "sphere"
+tf_frame_id: "figure_eight"
+object_type: "sphere"
+radius: 0.1
+rgba_color: [0.5, 0.5, 0.1, 0.75]
