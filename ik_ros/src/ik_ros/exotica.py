@@ -2,6 +2,7 @@ import rospy
 import pyexotica as exo
 import exotica_core_task_maps_py
 import exotica_scipy_solver
+from .ik import IK
 
 """
 
@@ -29,15 +30,19 @@ class ExoticaBase(IK):
         scipy_solver_method = rospy.get_param('~scipy_solver_method', 'SLSQP')
 
         # Setup Exotica
-        self.problem = exo.Setup.load_problem(xml_filename)
+        self.solver = exo.Setup.load_solver(xml_filename)
+        self.problem = self.solver.get_problem()
         if use_scipy_solver:
             self.solver = exotica_scipy_solver.SciPyEndPoseSolver(problem=self.problem, method=scipy_solver_method, debug=False)
-        else:
-            self.solver = self.problem.get_solver()
-        self.problem = self.solver.get_problem()
+        # if use_scipy_solver:
+        #     self.solver = exotica_scipy_solver.SciPyEndPoseSolver(problem=self.problem, method=scipy_solver_method, debug=False)
+        # else:
+        #     self.solver = self.problem.get_solver()
+        # self.problem = self.solver.get_problem()
         self.scene = self.problem.get_scene()
         self.task_maps = self.problem.get_task_maps()
         self._joint_names = self.scene.get_controlled_joint_names()
+        # print(self.scene.get_model_link_names())
 
 
     def did_recieve_setup(self):
