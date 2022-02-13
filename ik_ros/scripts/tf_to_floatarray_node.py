@@ -21,7 +21,7 @@ def main():
 
         # Grab transform
         try:
-            tf = tfBuffer.lookup_transform(parent_frame_id, parent_frame_id, rospy.Time())
+            tf = tfBuffer.lookup_transform(parent_frame_id, child_frame_id, rospy.Time())
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             rospy.logwarn('did not recieve transform %s in %s', child_frame_id, parent_frame_id)
             rate.sleep()
