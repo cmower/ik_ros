@@ -1,34 +1,40 @@
 <?xml version="1.0" ?>
 <IKSolverDemoConfig>
 
-  <IKSolver Name="MySolver">
-    <MaxIterations>1</MaxIterations>
-  </IKSolver>
+  <!-- <IKSolver Name="MySolver"> -->
+  <!--   <MaxIterations>100</MaxIterations> -->
+  <!-- </IKSolver> -->
+
+  <SnoptIKUnconstrainedSolver Name="MySolver" MaxIterations="20" />
 
   <UnconstrainedEndPoseProblem Name="MyProblem">
 
     <PlanningScene>
       <Scene>
         <JointGroup>arm</JointGroup>
-        <URDF>{exotica_examples}/resources/robots/lwr_simplified.urdf</URDF>
-        <SRDF>{exotica_examples}/resources/robots/lwr_simplified.srdf</SRDF>
+        <URDF>{ik_ros_examples}/robots/lwr.urdf</URDF>
+        <SRDF>{ik_ros_examples}/robots/lwr.srdf</SRDF>
+        <Links>
+          <Link Name="Target"/>
+        </Links>
       </Scene>
     </PlanningScene>
 
     <Maps>
-      <EffFrame Name="Pose">
+      <EffPosition Name="Pos">
         <EndEffector>
-            <Frame Link="lwr_arm_6_link"/>
+          <Frame Link="lwr_arm_7_link" Base="Target"/>
         </EndEffector>
-      </EffFrame>
+      </EffPosition>
     </Maps>
 
     <Cost>
-      <Task Task="Pose"/>
+      <Task Task="Pos"/>
     </Cost>
 
     <StartState>0 0 0 0 0 0 0</StartState>
     <W> 7 6 5 4 3 2 1 </W>
+
   </UnconstrainedEndPoseProblem>
 
 </IKSolverDemoConfig>
