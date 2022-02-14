@@ -15,6 +15,7 @@ add_service_files(
   FILES
   ToggleIK.srv
   SolveIK.srv
+  JointNameOrder.srv
   )
 
 generate_messages(

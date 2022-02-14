@@ -4,6 +4,7 @@ from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
 from ik_ros.srv import ToggleIK, ToggleIKResponse
 from ik_ros.srv import SolveIK, SolveIKResponse
+from ik_ros.srv import JointNameOrder, JointNameOrderResponse
 
 
 class IK:
@@ -94,10 +95,16 @@ class IKNode:
         rospy.Service('/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
         rospy.Service('/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
         rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
+        rospy.Service('/joint_name_order', JointNameOrder, self.service_joint_name_order)
+
 
 
     def spin(self):
         rospy.spin()
+
+
+    def service_joint_name_order(self):
+        return JointNameOrderResponse(joint_name=self.ik.joint_names())
 
 
     ##############################################
