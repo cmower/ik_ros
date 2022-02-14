@@ -1,7 +1,7 @@
 import rospy
 import numpy as np
 from std_msgs.msg import Float64MultiArray
-import trac_ik_python.trac_ik as trac_ik
+from trac_ik_python.trac_ik_wrap import TRAC_IK
 from ros_pybullet_interface.config import replace_package
 from .ik import IK
 
@@ -43,8 +43,9 @@ class TracIK(IK):
             urdf_string = f.read()
 
         # Setup IK solver
-        self.ik_solver = trac_ik.IK(base_link, tip_link, timeout=timeout, epsilon=epsilon, solve_type=solve_type, urdf_string=urdf_string)
-
+        self.ik_solver = TRAC_IK(base_link, tip_link, urdf_string, timeout, epsilon, solve_type)
+        self._joint_names = self.ik_solver.getJointNamesInChain(urdf_string)
+        self.ndof = self.ik_solver.getNrOfJointsInChain()
 
     def reset(self, setup):
         """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray."""
@@ -55,23 +56,28 @@ class TracIK(IK):
         self.ry = setup.data[4]
         self.rz = setup.data[5]
         self.rw = setup.data[6]
-        self.qinit = setup.data[7:]
-
+        if len(setup.data) > 7:
+            self.qinit = setup.data[7:]
+        else:
+            self.qinit = [0.0]*self.ndof
 
     def solve(self):
         """Calls the IK solver."""
-        self._solution = self.ik_solver.get_ik(
+        if len(self.qinit) != self.ndof:
+            raise ValueError(f"qinit has incorrect length, got {len(self.qinit)} expected {self.ndof}")
+
+        self._solution = self.ik_solver.CartToJnt(
             self.qinit,
             self.x, self.y, self.z,
             self.rx, self.ry, self.rz, self.rw,
-            bx=self.bx, by=self.by, bz=self.bz,
-            brx=self.brx, bry=self.bry, brz=self.brz,
+            self.bx, self.by, self.bz,
+            self.brx, self.bry, self.brz,
         )
 
 
     def joint_names(self):
         """Return a list of joint names in same order as solution."""
-        return self.ik_solver.joint_names
+        return self._joint_names
 
 
     def solution(self):
