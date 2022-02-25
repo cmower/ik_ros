@@ -1,5 +1,6 @@
 import rospy
 import tf2_ros
+from abc import ABC, abstractmethod
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
 from ik_ros.srv import ToggleIK, ToggleIKResponse
@@ -7,9 +8,10 @@ from ik_ros.srv import SolveIK, SolveIKResponse
 from ik_ros.srv import JointNameOrder, JointNameOrderResponse
 
 
-class IK:
+class IK(ABC):
 
 
+    @abstractmethod
     def reset(self, setup):
         """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray.
 
@@ -24,12 +26,14 @@ Parameters
   setup (std_msgs/Float64MultiArray)
     Goals and parameters for the IK solver.
 """
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def solve(self):
         """Calls the IK solver. Does take any input or return anything."""
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def joint_names(self):
         """Return a list of joint names in same order as solution.
 
@@ -44,8 +48,9 @@ Returns
     joint_names (list[string])
       A list of joint names in the same order that the solution method returns.
 """
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def solution(self):
         """Returns the solution for the previous call to solve as a Python list.
 
@@ -60,7 +65,7 @@ Returns
     solution (list[float])
       Joint state solution for problem solved in previous call to IKClass.solve.
 """
-        raise NotImplemented
+        pass
 
 
 class JointStatePublisher:
