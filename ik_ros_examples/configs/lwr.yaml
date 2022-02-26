@@ -1,7 +1,7 @@
 name: "lwr"
 urdf_filename: "{ik_ros_examples}/robots/lwr.urdf"
 # init_position: [0., 28.64788976, 17.18873385, -28.64788976, 11.4591559, 45.83662361, 0.]
-init_position: [0, 30, 0, 90, 0, -30, 0]
+init_position: [0, 30, 0, 90, 0, -30, -90]
 tf_frame_id: "lwr_base"
 alpha: 1.0
 
