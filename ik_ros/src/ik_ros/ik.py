@@ -133,6 +133,7 @@ class IKNode:
         self.callback_subscriber = SetupSubscriber(self.callback)
 
         # Setup ROS services
+        # NOTE: if multiple IK nodes are used then service names will need to be remapped
         rospy.Service('/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
         rospy.Service('/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
         rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
