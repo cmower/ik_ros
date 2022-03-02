@@ -139,7 +139,11 @@ class IKNode:
         rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
         rospy.Service('/joint_name_order', JointNameOrder, self.service_joint_name_order)
 
-
+        # Start on init
+        start_streaming_on_init = rospy.get_param('~start_streaming_on_init', False)
+        start_callback_on_init =
+        if rospy.get_param('~start_callback_on_init', False):
+            self.enable_ik_callback(None)
 
     def spin(self):
         rospy.spin()
