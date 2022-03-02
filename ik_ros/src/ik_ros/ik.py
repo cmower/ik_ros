@@ -13,58 +13,18 @@ class IK(ABC):
 
     @abstractmethod
     def reset(self, setup):
-        """Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray.
-
-Syntax
-------
-
-    IKClass.reset(setup)
-
-Parameters
-----------
-
-  setup (std_msgs/Float64MultiArray)
-    Goals and parameters for the IK solver.
-"""
         pass
 
     @abstractmethod
     def solve(self):
-        """Calls the IK solver. Does take any input or return anything."""
         pass
 
     @abstractmethod
     def joint_names(self):
-        """Return a list of joint names in same order as solution.
-
-Syntax
-------
-
-    joint_names = IKClass.joint_names()
-
-Returns
--------
-
-    joint_names (list[string])
-      A list of joint names in the same order that the solution method returns.
-"""
         pass
 
     @abstractmethod
     def solution(self):
-        """Returns the solution for the previous call to solve as a Python list.
-
-Syntax
-------
-
-    solution = IKClass.solution()
-
-Returns
--------
-
-    solution (list[float])
-      Joint state solution for problem solved in previous call to IKClass.solve.
-"""
         pass
 
 

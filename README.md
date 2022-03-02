@@ -17,7 +17,7 @@ interfaces exist already:
 # Adding a new IK interface
 
 You must implement a class that inherits from the `IK` class found in
-`ik_ros/src/ik_ros/ik.py`. This must define several methods:
+`ik_ros/src/ik_ros/ik.py`. This must define several methods (see next section for full documentation):
 * `reset`: reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type `std_msgs/Float64MultiArray`
 * `solve`: calls the IK solver.
 * `joint_names`: return a list of joint names in same order as solution.
@@ -25,6 +25,67 @@ You must implement a class that inherits from the `IK` class found in
 
 Add the new script to `ik_ros/src/ik_ros`, and make sure to import the
 class in `ik_ros/scripts/ik_node.py`.
+
+# Child classes of the `IK` class
+
+## `reset`
+
+Reset IK problem/solver, must be called prior to solve. Note the setup parameter must be of type std_msgs/Float64MultiArray.
+
+### Syntax
+
+```python
+IKClass.reset(setup)
+```
+
+### Parameters
+
+* setup ([std_msgs/Float64MultiArray](http://docs.ros.org/en/api/std_msgs/html/msg/Float64MultiArray.html))
+
+  Goals and parameters for the IK solver.
+
+## `solve`
+
+Calls the IK solver. Does take any input or return anything. There is no input or output for this method.
+
+### Syntax
+
+```python
+IKClass.solve()
+```
+
+## `joint_names`
+
+Return a list of joint names in same order as solution.
+
+### Syntax
+
+```python
+joint_names = IKClass.joint_names()
+```
+
+
+### Returns
+
+* `joint_names` (list[string])
+
+  A list of joint names in the same order that the solution method returns.
+
+## `solution`
+
+Returns the solution for the previous call to solve as a Python list.
+
+### Syntax
+
+```python
+solution = IKClass.solution()
+```
+
+### Returns
+
+* `solution` (list[float])
+
+  Joint state solution for problem solved in previous call to `IKClass.solve`.
 
 # IK node
 
