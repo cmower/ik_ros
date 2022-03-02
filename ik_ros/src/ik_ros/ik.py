@@ -1,9 +1,10 @@
 import rospy
 import tf2_ros
+from functools import partial
 from abc import ABC, abstractmethod
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
-from ik_ros.srv import ToggleIK, ToggleIKResponse
+from std_srvs.srv import SetBool, SetBoolResponse
 from ik_ros.srv import SolveIK, SolveIKResponse
 from ik_ros.srv import JointNameOrder, JointNameOrderResponse
 
@@ -43,20 +44,21 @@ class JointStatePublisher:
         self.pub.publish(self.pack_message(position))
 
 
-class SetupSubscriber:
+class IkCallback:
 
 
     def __init__(self, callback_handle):
         self.sub = None
-        self.is_running = False
         self.did_recieve_setup = None
         self.callback_handle = callback_handle
 
+    @property
+    def is_running(self):
+        return self.sub is not None
 
     def start(self):
         self.did_recieve_setup = False
         self.sub = rospy.Subscriber('setup', Float64MultiArray, self.callback)
-        self.is_running = True
 
 
     def callback(self, msg):
@@ -66,9 +68,8 @@ class SetupSubscriber:
 
     def stop(self):
         self.sub.unregister()
-        self.is_running = False
+        self.sub = None
         self.did_recieve_setup = None
-
 
 class IKNode:
 
@@ -82,6 +83,10 @@ class IKNode:
         # Initialize ROS node
         rospy.init_node('ik_ros_node', anonymous=True)
 
+        # Get ros parameters
+        hz = rospy.get_param('~hz', 100)
+        self.dt = 1.0/float(hz)
+
         # Initialize IK interface
         self.ik = IKClass()
 
@@ -89,41 +94,38 @@ class IKNode:
         self.joint_state_publisher = JointStatePublisher(self.ik.joint_names())
 
         # Setup setup subscribers
-        self.streaming_subscriber = SetupSubscriber(self.ik.reset)
-        self.callback_subscriber = SetupSubscriber(self.callback)
+        self.streaming_ik_callback = IkCallback(self.ik.reset)
+        self.callback_ik_callback = IkCallback(self.callback)
 
         # Setup ROS services
         # NOTE: if multiple IK nodes are used then service names will need to be remapped
-        rospy.Service('/toggle_ik_streaming', ToggleIK, self.service_toggle_ik_streaming)
-        rospy.Service('/toggle_ik_callback', ToggleIK, self.service_toggle_ik_callback)
+        rospy.Service('/toggle_ik_streaming', SetBool, partial(self.toggle, enable_handle=self.enable_ik_streaming, disable_handle=self.disable_ik_streaming))
+        rospy.Service('/toggle_ik_callback', SetBool, partial(self.toggle, enable_handle=self.enable_ik_callback, disable_handle=self.disable_ik_callback))
         rospy.Service('/solve_ik', SolveIK, self.service_solve_ik)
         rospy.Service('/joint_name_order', JointNameOrder, self.service_joint_name_order)
 
         # Start on init
         if rospy.get_param('~start_callback_on_init', False):
-            self.enable_ik_callback(None)
+            self.enable_ik_callback()
+
 
     def spin(self):
         rospy.spin()
+
+
+    def toggle(self, req, enable_handle, disable_handle):
+        if req.data:
+            success, message = enable_handle()
+        else:
+            success, message = disable_handle()
+        return SetBoolResponse(success=success, message=message)
 
 
     def service_joint_name_order(self):
         return JointNameOrderResponse(joint_name=self.ik.joint_names())
 
 
-    ##############################################
-    ## Streaming
-
-
-    def service_toggle_ik_streaming(self, req):
-        if req.switch:
-            success, message = self.enable_ik_streaming(req)
-        else:
-            success, message = self.disable_ik_streaming(req)
-        return ToggleIKResponse(message=message, success=success)
-
-
-    def enable_ik_streaming(self, req):
+    def enable_ik_streaming(self):
         success = True
         message = 'enabled ik streaming'
         if not self.streaming_subscriber.is_running:
@@ -131,7 +133,7 @@ class IKNode:
             if not self.callback_subscriber.is_running:
                 # Turn on IK streaming
                 self.streaming_subscriber.start()
-                self.streaming_timer = rospy.Timer(rospy.Duration(1.0/float(req.hz)), self.stream)
+                self.streaming_timer = rospy.Timer(rospy.Duration(self.dt), self.stream)
                 rospy.loginfo('enabled ik streaming')
 
             else:
@@ -148,7 +150,7 @@ class IKNode:
         return success, message
 
 
-    def disable_ik_streaming(self, req):
+    def disable_ik_streaming(self):
         success = True
         message = ''
         if self.streaming_subscriber.is_running:
@@ -172,20 +174,7 @@ class IKNode:
         except Exception as e:
             rospy.logwarn('IK failed during streaming: '+str(e))
 
-
-    ##############################################
-    ## Callback
-
-
-    def service_toggle_ik_callback(self, req):
-        if req.switch:
-            success, message = self.enable_ik_callback(req)
-        else:
-            success, message = self.disable_ik_callback(req)
-        return ToggleIKResponse(message=message, success=success)
-
-
-    def enable_ik_callback(self, req):
+    def enable_ik_callback(self):
         success = True
         message = 'enabled ik callback'
         if not self.callback_subscriber.is_running:
@@ -203,6 +192,17 @@ class IKNode:
 
         return success, message
 
+    def disable_ik_callback(self):
+        success = True
+        message = 'disabled ik callback'
+        if self.callback_subscriber.is_running:
+            self.callback_subscriber.stop()
+        else:
+            success = False
+            message = 'user attempted to turn off ik callback, but it is not running!'
+            rospy.logerr(message)
+        return success, message
+
 
     def callback(self, msg):
         try:
@@ -211,11 +211,6 @@ class IKNode:
             self.joint_state_publisher.publish(self.ik.solution())
         except Exception as e:
             rospy.logwarn('IK failed in callback: '+str(e))
-
-
-    ##############################################
-    ## Solve IK service
-
 
     def service_solve_ik(self, req):
 
