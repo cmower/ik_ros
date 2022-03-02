@@ -128,11 +128,11 @@ class IKNode:
     def enable_ik_streaming(self):
         success = True
         message = 'enabled ik streaming'
-        if not self.streaming_subscriber.is_running:
+        if not self.streaming_ik_callback.is_running:
 
-            if not self.callback_subscriber.is_running:
+            if not self.callback_ik_callback.is_running:
                 # Turn on IK streaming
-                self.streaming_subscriber.start()
+                self.streaming_ik_callback.start()
                 self.streaming_timer = rospy.Timer(rospy.Duration(self.dt), self.stream)
                 rospy.loginfo('enabled ik streaming')
 
@@ -153,9 +153,9 @@ class IKNode:
     def disable_ik_streaming(self):
         success = True
         message = ''
-        if self.streaming_subscriber.is_running:
+        if self.streaming_ik_callback.is_running:
             self.streaming_timer.shutdown()
-            self.streaming_subscriber.stop()
+            self.streaming_ik_callback.stop()
             self.streaming_timer = None
             rospy.loginfo('turned off ik streaming')
         else:
@@ -166,7 +166,7 @@ class IKNode:
 
 
     def stream(self, event):
-        if not self.streaming_subscriber.did_recieve_setup:
+        if not self.streaming_ik_callback.did_recieve_setup:
             return
         try:
             self.ik.solve()
@@ -177,10 +177,10 @@ class IKNode:
     def enable_ik_callback(self):
         success = True
         message = 'enabled ik callback'
-        if not self.callback_subscriber.is_running:
+        if not self.callback_ik_callback.is_running:
 
-            if not self.streaming_subscriber.is_running:
-                self.callback_subscriber.start()
+            if not self.streaming_ik_callback.is_running:
+                self.callback_ik_callback.start()
             else:
                 success = False
                 message = 'user attempted to turn on ik callback, but ik streaming is already running!'
@@ -195,8 +195,8 @@ class IKNode:
     def disable_ik_callback(self):
         success = True
         message = 'disabled ik callback'
-        if self.callback_subscriber.is_running:
-            self.callback_subscriber.stop()
+        if self.callback_ik_callback.is_running:
+            self.callback_ik_callback.stop()
         else:
             success = False
             message = 'user attempted to turn off ik callback, but it is not running!'
@@ -215,13 +215,13 @@ class IKNode:
     def service_solve_ik(self, req):
 
         # Check streaming/callback is not enabled
-        if self.streaming_subscriber.is_running:
+        if self.streaming_ik_callback.is_running:
             success = False
             solution = []
             message = 'cannot solve IK when streaming ik is enabled'
             return SolveIKResponse(message=message, success=success, solution=solution)
 
-        if self.callback_subscriber.is_running:
+        if self.callback_ik_callback.is_running:
             success = False
             solution = []
             message = 'cannot solve IK when callback ik is enabled'
