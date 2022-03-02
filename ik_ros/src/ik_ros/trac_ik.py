@@ -2,7 +2,7 @@ import rospy
 import numpy as np
 from std_msgs.msg import Float64MultiArray
 from trac_ik_python.trac_ik_wrap import TRAC_IK
-from ros_pybullet_interface.config import replace_package
+from rpbi.config import replace_package
 from .ik import IK
 
 
