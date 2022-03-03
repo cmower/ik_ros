@@ -105,8 +105,17 @@ class IKNode:
         rospy.Service('/joint_name_order', JointNameOrder, self.service_joint_name_order)
 
         # Start on init
-        if rospy.get_param('~start_callback_on_init', False):
-            self.enable_ik_callback()
+        success = True
+        start_callback_on_init = rospy.get_param('~start_callback_on_init', False)
+        start_streaming_on_init = rospy.get_param('~start_streaming_on_init', False)
+        if start_callback_on_init and start_streaming_on_init:
+            raise ValueError("Both ROS parameters ~start_callback_on_init and ~start_streaming_on_init are true, this is ambiguous.")
+        elif start_streaming_on_init:
+            success, _ = self.enable_ik_streaming()
+        elif start_callback_on_init:
+            success, _ = self.enable_ik_callback()
+        if success:
+            rospy.loginfo('started IK server: %s' % rospy.get_name())
 
 
     def spin(self):
