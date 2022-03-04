@@ -21,18 +21,19 @@
     </PlanningScene>
 
     <Maps>
-      <EffPosition Name="Pos">
+      <EffFrame Name="Pos">
         <EndEffector>
           <Frame Link="lwr_arm_7_link" Base="Target"/>
         </EndEffector>
-      </EffPosition>
+      </EffFrame>
     </Maps>
 
     <Cost>
       <Task Task="Pos"/>
     </Cost>
 
-    <StartState>0 0 0 0 0 0 0</StartState>
+    <StartState>0 -0.523599 0 -1.57 0 0.523599 0</StartState>
+    <NominalState>0 -0.523599 0 -1.57 0 0.523599 0</NominalState>
     <W> 7 6 5 4 3 2 1 </W>
 
   </UnconstrainedEndPoseProblem>
