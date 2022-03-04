@@ -36,7 +36,6 @@ class Node:
         hz = rospy.get_param('~hz', 50)
         self.dt = 1.0/float(hz)
         # rospy.Service('toggle_tf_to_floatarray', SetBool, self.toggle)
-        self.sub = None
         self.timer = None
         ToggleService('toggle_tf_to_floatarray', self.start, self.stop)
 
@@ -48,10 +47,11 @@ class Node:
     #     return SetBoolResponse(message=message, success=success)
 
     def start(self):
-        if (self.sub is None) and (self.timer is None):
+        if (self.timer is None):
             self.timer = rospy.Timer(rospy.Duration(self.dt), self.main_loop)
             success = True
             message = 'started tf_to_floatarray node'
+            rospy.loginfo(message)
         else:
             success = False
             message = 'user attempted to start tf_to_floatarray node, but it is already running!'
@@ -59,13 +59,16 @@ class Node:
         return success, message
 
     def stop(self):
-        if (self.sub is not None) and (self.timer is not None):
+        if (self.timer is not None):
             self.timer.shutdown()
+            self.timer = None
             success = True
             message = 'stopped tf_to_floatarray node'
+            rospy.loginfo(message)
         else:
             success = False
             message = 'user attempted to stop tf_to_floatarray node, but it is not running!'
+            rospy.logerr(message)
         return success, message
 
     def main_loop(self, event):
