@@ -14,6 +14,7 @@
     <param name="urdf_filename" type="string" value="{ik_ros_examples}/robots/lwr.urdf"/>
     <param name="tip_link" type="string" value="lwr_arm_7_link"/>
     <param name="base_link" type="string" value="base"/>
+    <param name="start_callback_on_init" type="bool" value="true"/>
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>
 
@@ -21,7 +22,7 @@
   <node pkg="ros_pybullet_interface" name="ros_pybullet_interface_node" type="ros_pybullet_interface_node.py">
 
     <!-- Config file for Pybullet -->
-    <param name="pybullet_config" value="{ik_ros_examples}/configs/lwr_trac_ik_example/pybullet.yaml" type="str"/>
+    <param name="pybullet_config" value="{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/pybullet.yaml" type="str"/>
 
     <!-- Node frequency -->
     <param name="ros_node_freq" value="100" type="int"/>
@@ -29,13 +30,13 @@
     <!-- Simulated robot -->
     <rosparam param="robot_config_file_names">
       [
-      "{ik_ros_examples}/configs/configs/lwr_trac_ik_example/kuka_lwr.yaml",
+      "{ik_ros_examples}/configs/configs/kuka_lwr_trac_ik_example/kuka_lwr.yaml",
       ]
     </rosparam>
 
     <rosparam param="visual_object_config_file_names">
       [
-      "{ik_ros_examples}/configs/sphere.yaml"
+      "{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/sphere.yaml"
       ]
     </rosparam>
 
