@@ -6,7 +6,7 @@ from ik_ros.ik_node import IKNode
 
 # Import all interface classes
 from ik_ros.trac_ik import TracIKInterface
-from ik_ros.exotica import ExoticaInterface
+from ik_ros.exotica import EXOTicaInterface
 
 def main():
 
