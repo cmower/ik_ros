@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+import sys
 import rospy
+from sensor_msgs.msg import JointState
 from ik_ros.msg import TracIKProblem
 from rpbi.tf_interface import TfInterface
-
-ndof = 7  # no. degrees of freedom for Kuka LWR
 
 class Node:
 
@@ -12,14 +12,17 @@ class Node:
         rospy.init_node('run_lwr_trac_ik_example')
         self.tf = TfInterface()
         self.pub = rospy.Publisher('ik', TracIKProblem, queue_size=10)
-        rospy.Timer(rospy.Duration(1.0/float(rospy.get_param('~hz'))))
+        self.qinit = rospy.wait_for_message('rpbi/kuka_lwr/joint_states', JointState)
+        rospy.Subscriber('rpbi/kuka_lwr/joint_states', JointState, self.callback)
+        rospy.Timer(rospy.Duration(1.0/float(rospy.get_param('~hz', 100))), self.loop)
 
+    def callback(self, msg):
+        self.qinit = msg
 
     def loop(self, event):
-        tf = self.tf.get_tf_msg('world', 'figure_eight')
+        tf = self.tf.get_tf_msg('rpbi/kuka_lwr/base', 'figure_eight')
         if tf:
-            self.pub.publish(TracIKProblem(qinit=[0.0]*ndof, goal=tf))
-
+            self.pub.publish(TracIKProblem(qinit=self.qinit, goal=tf.transform))
 
     def spin(self):
         rospy.spin()

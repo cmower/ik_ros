@@ -6,8 +6,8 @@
     <param name="child_frame_id" type="string" value="figure_eight"/>
   </node>
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="figure_eight_base_in_world"
-	args="0.5 0 0.65 0 1.57 0 world figure_eight_base"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
+	args="-0. 0 0.65 0 1.57 3.141 world figure_eight_base"/>
 
   <!-- IK Node -->
   <node pkg="ik_ros" name="ik_node" type="ik_node.py" args="TracIKInterface" output="screen">
@@ -21,22 +21,24 @@
   <!-- ROS-Pybullet interface node simulator -->
   <node pkg="ros_pybullet_interface" name="ros_pybullet_interface_node" type="ros_pybullet_interface_node.py">
 
-    <!-- Config file for Pybullet -->
-    <param name="pybullet_config" value="{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/pybullet.yaml" type="str"/>
+    <param name="pybullet_config_filename" type="string" value="{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/pybullet.yaml"/>
+    <param name="visualizer_config_filename" type="string" value="{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/visualizer.yaml"/>
 
-    <!-- Node frequency -->
-    <param name="ros_node_freq" value="100" type="int"/>
-
-    <!-- Simulated robot -->
-    <rosparam param="robot_config_file_names">
+    <rosparam param="pybullet_robot_config_filenames">
       [
-      "{ik_ros_examples}/configs/configs/kuka_lwr_trac_ik_example/kuka_lwr.yaml",
+      "{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/kuka_lwr.yaml",
       ]
     </rosparam>
 
-    <rosparam param="visual_object_config_file_names">
+    <rosparam param="pybullet_visual_object_config_filenames">
       [
       "{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/sphere.yaml"
+      ]
+    </rosparam>
+
+    <rosparam param="pybullet_collision_object_config_filenames">
+      [
+      "{rpbi_examples}/configs/floor.yaml"
       ]
     </rosparam>
 
@@ -47,5 +49,7 @@
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="attach_world_to_rpbi_world"
 	args="0 0 0 0 0 0 world rpbi/world"/>
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ik_ros_examples)/rviz/kuka_lwr_trac_ik_example.rviz" />
 
 </launch>
