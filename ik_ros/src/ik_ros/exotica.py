@@ -104,10 +104,11 @@ class EXOTicaInterface(IK):
             self.task_maps[name].set_goal(goal)
 
         # Update joint smoothing task maps
-        if problem.previous_solution.position and self.joint_smoothing_task_maps:
-            previous_joint_state = self.resolve_joint_position_order(problem.previous_solution)
-            for task_map in self.joint_smoothing_task_maps:
-                task_map.set_previous_joint_state(previous_joint_state)
+        if problem.previous_solutions and self.joint_smoothing_task_maps:
+            for previous_solution in problem.previous_solutions:
+                previous_joint_state = self.resolve_joint_position_order(previous_solution)
+                for task_map in self.joint_smoothing_task_maps:
+                    task_map.set_previous_joint_state(previous_joint_state)
 
         if self.previous_solution is not None and self.joint_smoothing_task_maps:
             for task_map in self.joint_smoothing_task_maps:
