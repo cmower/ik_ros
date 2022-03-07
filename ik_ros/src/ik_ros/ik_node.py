@@ -2,6 +2,7 @@ import rospy
 from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
+from ik_ros.srv import JointNames, JointNamesResponse
 
 
 class ToggleService(rospy.Service):
@@ -40,7 +41,8 @@ class IKNode:
 
         # Setup ros services
         ToggleService('toggle_ik', self.enable, self.disable)
-        rospy.Service('solve_ik', self.ik.get_solve_ik_srv_type(), self.solve_ik)
+        rospy.Service('solve_ik', self.ik.srv_type, self.solve_ik)
+        rospy.Service('joint_names', JointNames, self.joint_names)
 
         # Enable callback on intialization
         if rospy.get_param('~start_callback_on_init', False):
@@ -49,6 +51,9 @@ class IKNode:
                 rospy.loginfo(message)
             else:
                 rospy.logerr(message)
+
+    def joint_names(self, req):
+        return JointNamesResponse(joint_names=self.ik.get_joint_names())
 
     def enable(self):
         if self.sub is None:
