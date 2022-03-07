@@ -88,3 +88,7 @@ class IKNode:
     def solve_ik(self, req):
         success, message, solution = self.ik.solve(req.problem)
         return self.ik.srv_resp_type(success=success, message=message, solution=solution)
+
+
+    def spin(self):
+        rospy.spin()
