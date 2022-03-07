@@ -42,6 +42,13 @@ class IKNode:
         ToggleService('toggle_ik', self.enable, self.disable)
         rospy.Service('solve_ik', self.ik.get_solve_ik_srv_type(), self.solve_ik)
 
+        # Enable callback on intialization
+        if rospy.get_param('~start_callback_on_init', False):
+            success, message = self.enable()
+            if success:
+                rospy.loginfo(message)
+            else:
+                rospy.logerr(message)
 
     def enable(self):
         if self.sub is None:
