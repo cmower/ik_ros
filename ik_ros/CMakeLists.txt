@@ -6,20 +6,26 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   tf2_ros
   sensor_msgs
+  geometry_msgs
   message_generation
 )
 
 catkin_python_setup()
 
+add_message_files(
+  FILES
+  EXOTicaProblem.msg
+  TracIKProblem.msg
+)
+
 add_service_files(
   FILES
-  ToggleIK.srv
-  SolveIK.srv
-  JointNameOrder.srv
+  EXOTica.srv
+  TracIK.srv
   )
 
 generate_messages(
-  DEPENDENCIES std_msgs sensor_msgs
+  DEPENDENCIES std_msgs sensor_msgs geometry_msgs
 )
 
 catkin_package(

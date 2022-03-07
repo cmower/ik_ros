@@ -1,56 +1,132 @@
-import rospy
+import ropsy
+from .ik_interface import IK
+from sensor_msgs.msg import JointState
 import pyexotica as exo
 import exotica_core_task_maps_py
 import exotica_scipy_solver
-from .ik import IK
+from ik_ros.msg import EXOTicaProblem
+from ik_ros.srv import EXOTica, EXOTicaResponse
+from rpbi.tf_interface import TfInterface
 
-"""
-
-This provides a base-class for the EXOTica interface. In order to
-define the setup for each call to the solver, you need to provide a
-defined reset method.
-
-
-"""
-
-class ExoticaBase(IK):
+class EXOTicaInterface(IK):
 
     """Interface to Exotica: https://github.com/ipab-slmc/exotica"""
 
+    problem_msg_type = EXOTicaProblem
+    srv_type = EXOTica
+    srv_resp_type = EXOTicaResponse
+
+    joint_smoothing_task_map_types = (
+        exotica_core_task_maps_py.JointVelocityBackwardDifference,
+        exotica_core_task_maps_py.JointAccelerationBackwardDifference,
+        exotica_core_task_maps_py.JointJerkBackwardDifference,
+    )
 
     def __init__(self):
 
-        # Setup class attributes
-        self._solution = None
+        ##############################
+        ## Get ROS parameters
+        xml_filename = rospy.get_param('~xml_filename')
 
-        # Get ROS parameters
-        xml_filename = rospy.get_param('~exotica_xml_filename')
+        # Scipy solver
         use_scipy_solver = rospy.get_param('~use_scipy_solver', False)
         scipy_solver_method = rospy.get_param('~scipy_solver_method', 'SLSQP')
 
-        # Setup Exotica
-        self.solver = exo.Setup.load_solver(xml_filename)
-        self.problem = self.solver.get_problem()
-        if use_scipy_solver:
+        # Sync tf to object transform
+        sync_tf_to_exotica_object = rospy.get_param('~sync_tf_to_exotica_object', [])
+
+        ##############################
+        ## Setup tf interface
+
+        self.tf = TfInterface()
+
+        ##############################
+        ## Load EXOTica
+
+        # Load problem and solver
+        solver = None
+        try:
+            solver = exo.Setup.load_solver(xml_filename)
+        except RunTimeError as e:
+            rospy.loginfo('no solver specified in EXOTica XML, defaulting to Scipy solver')
+            use_scipy_solver = True
+
+        if not use_scipy_solver:
+            self.solver = solver
+            self.problem = self.solver.get_problem()
+        else:
+            self.problem = exo.Setup.load_problem(xml_filename)
             self.solver = exotica_scipy_solver.SciPyEndPoseSolver(problem=self.problem, method=scipy_solver_method, debug=False)
-        # if use_scipy_solver:
-        #     self.solver = exotica_scipy_solver.SciPyEndPoseSolver(problem=self.problem, method=scipy_solver_method, debug=False)
-        # else:
-        #     self.solver = self.problem.get_solver()
-        # self.problem = self.solver.get_problem()
+
+        # Load scene and task maps
         self.scene = self.problem.get_scene()
         self.task_maps = self.problem.get_task_maps()
+
+        # Get joint names
         self._joint_names = self.scene.get_controlled_joint_names()
-        # print(self.scene.get_model_link_names())
 
+        # Setup joint smoothing task maps
+        self.joint_smoothing_task_maps = [task_map for task_map in self.task_maps.values() if isinstance(task_map, self.joint_smoothing_task_map_types)]
 
-    def solve(self):
-        self._solution = self.solver.solve()[0].tolist()
+        # Get start state in xml
+        self.xml_start_state = self.problem.start_state.copy()
 
+        ##############################
+        ## Setup tf syncs
 
-    def joint_names(self):
+        self.sync_tf_to_exotica_object = []
+        for spec in sync_tf_to_exotica_object:
+            tf_parent_frame, tf_child_frame, exo_parent_frame, exo_child_frame = spec.split(' ')
+            if exo_parent_frame == "''":
+                exo_parent_frame = ''
+            self.sync_tf_to_exotica_object.append({'tf_parent': tf_parent_frame, 'tf_child': tf_child_frame, 'exo_parent': exo_parent_frame, 'exo_child': exo_child_frame})
+
+    def get_joint_names(self):
         return self._joint_names
 
+    def solve(self, problem):
 
-    def solution(self):
-        return self._solution
+        ##############################
+        ## Setup problem
+
+        # Update transform frames
+        for spec in self.sync_tf_to_exotica_object:
+            pos, rot = self.tf.get_tf(spec['tf_parent'], spec['tf_child'])
+            if pos is None: continue
+            self.scene.attach_object_local(spec['exo_child'], spec['exo_parent'], pos+rot)
+
+        # Update problem start state
+        if problem.start_state.position:
+            self.problem.start_state = self.resolve_joint_position_order(problem.start_state)
+
+        # Update task maps
+        for name, goal in zip(problem.task_map_names, problem.task_maps_goals):
+            self.task_maps[name].set_goal(goal)
+
+        # Update joint smoothing task maps
+        if problem.previous_solution.position and self.joint_smoothing_task_maps:
+            previous_joint_state = self.resolve_joint_position_order(problem.previous_solution)
+            for task_map in self.joint_smoothing_task_maps:
+                task_map.set_previous_joint_state(previous_joint_state)
+
+        if self.previous_solution is not None and self.joint_smoothing_task_maps:
+            for task_map in self.joint_smoothing_task_maps:
+                task_map.set_previous_joint_state(self.previous_solution)
+
+        ##############################
+        ## Solve problem
+
+        solution = self.solver.solve()[0]
+
+        # Pack solution
+        if solution:
+            success = True
+            message = 'exotica ik succeeded'
+            solution_ = JointState(name=self.get_joint_names(), position=solution)
+        else:
+            success = False
+            message = 'exotica ik failed'
+            solution_ = JointState(name=self.get_joint_names())
+        solution_.header.stamp = rospy.Time.now()
+
+        return success, message, solution_

@@ -2,11 +2,11 @@
 import sys
 
 # Import main ik node
-from ik_ros.ik import IKNode
+from ik_ros.ik_node import IKNode
 
 # Import all interface classes
-from ik_ros.trac_ik import TracIK
-from ik_ros.single_arm_exotica_effframe import SingleArmExoticaEffFrame
+from ik_ros.trac_ik import TracIKInterface
+from ik_ros.exotica import ExoticaInterface
 
 def main():
 

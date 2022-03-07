@@ -1,5 +1,0 @@
-float64[] setup
----
-sensor_msgs/JointState solution
-string message
-bool success

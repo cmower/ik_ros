@@ -1,0 +1,5 @@
+ik_ros/EXOTicaProblem problem
+---
+bool success
+string message
+sensor_msgs/JointState solution
