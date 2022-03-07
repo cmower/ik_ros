@@ -1,4 +1,4 @@
-import ropsy
+import rospy
 from .ik_interface import IK
 from sensor_msgs.msg import JointState
 import pyexotica as exo
