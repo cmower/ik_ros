@@ -1,4 +1,5 @@
 import rospy
+import numpy as np
 from .ik_interface import IK
 from sensor_msgs.msg import JointState
 from ik_ros.msg import TracIKProblem
