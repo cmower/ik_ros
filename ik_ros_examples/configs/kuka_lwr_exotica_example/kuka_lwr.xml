@@ -17,19 +17,26 @@
     </PlanningScene>
 
     <Maps>
+
       <EffFrame Name="Pose">
         <EndEffector>
           <Frame Link="lwr_arm_7_link" Base="Target"/>
         </EndEffector>
       </EffFrame>
+
+      <JointVelocityBackwardDifference Name="JointVel">
+	<StartState>0 0.523599 0 -1.57 0 1.0471975511965976 0</StartState>
+      </JointVelocityBackwardDifference>
+
     </Maps>
 
     <Cost>
-      <Task Task="Pose"/>
+      <Task Task="Pose" Rho="1"/>
+      <Task Task="JointVel" Rho="0.5e-3"/>
     </Cost>
 
-    <StartState>0 0.523599 0 -1.57 0 0.523599 1.0471975511965976 0</StartState>
-    <NominalState>0 0.523599 0 -1.57 0 0.523599 1.0471975511965976 0</NominalState>
+    <StartState>0 0.523599 0 -1.57 0 1.0471975511965976 0</StartState>
+    <NominalState>0 0.523599 0 -1.57 0 1.0471975511965976 0</NominalState>
     <W> 7 6 5 4 3 2 1 </W>
 
   </UnconstrainedEndPoseProblem>
