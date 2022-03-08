@@ -1,0 +1,57 @@
+<launch>
+
+  <!-- Produce task space motion (figure of eight) -->
+  <node pkg="ik_ros_examples" name="figure_eight_motion" type="figure_eight_node.py">
+    <param name="parent_frame_id" type="string" value="figure_eight_base"/>
+    <param name="child_frame_id" type="string" value="figure_eight"/>
+  </node>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
+	args="-0. 0 0.65 0 1.57 3.141 world figure_eight_base"/>
+
+  <!-- IK Node -->
+  <node pkg="ik_ros" name="ik_node" type="ik_node.py" args="EXOTicaInterface" output="screen">
+    <param name="xml_filename" type="str" value="{ik_ros_examples}/configs/kuka_lwr_exotica_example/kuka_lwr.xml"/>
+    <rosparam param="sync_tf_to_exotica_object">[
+    "rpbi/kuka_lwr/base figure_eight '' Target",
+    ]</rosparam>
+
+    <param name="start_callback_on_init" type="bool" value="true"/>
+    <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
+  </node>
+
+  <!-- ROS-Pybullet interface node simulator -->
+  <node pkg="ros_pybullet_interface" name="ros_pybullet_interface_node" type="ros_pybullet_interface_node.py">
+
+    <param name="pybullet_config_filename" type="string" value="{ik_ros_examples}/configs/kuka_lwr_exotica_example/pybullet.yaml"/>
+    <param name="visualizer_config_filename" type="string" value="{ik_ros_examples}/configs/kuka_lwr_exotica_example/visualizer.yaml"/>
+
+    <rosparam param="pybullet_robot_config_filenames">
+      [
+      "{ik_ros_examples}/configs/kuka_lwr_exotica_example/kuka_lwr.yaml",
+      ]
+    </rosparam>
+
+    <rosparam param="pybullet_visual_object_config_filenames">
+      [
+      "{ik_ros_examples}/configs/kuka_lwr_exotica_example/sphere.yaml"
+      ]
+    </rosparam>
+
+    <rosparam param="pybullet_collision_object_config_filenames">
+      [
+      "{rpbi_examples}/configs/floor.yaml"
+      ]
+    </rosparam>
+
+  </node>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="simulated_robot_base_tf_broadcaster"
+	args="0.0 0.0 0.0 0 0 0 rpbi/world lwr_base"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="attach_world_to_rpbi_world"
+	args="0 0 0 0 0 0 world rpbi/world"/>
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ik_ros_examples)/rviz/kuka_lwr_exotica_example.rviz" />
+
+</launch>
