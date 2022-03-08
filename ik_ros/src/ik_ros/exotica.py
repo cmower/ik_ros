@@ -100,7 +100,7 @@ class EXOTicaInterface(IK):
             self.problem.start_state = self.resolve_joint_position_order(problem.start_state)
 
         # Update task maps
-        for name, goal in zip(problem.task_map_names, problem.task_maps_goals):
+        for name, goal in zip(problem.task_map_names, problem.task_map_goals):
             self.task_maps[name].set_goal(goal)
 
         # Update joint smoothing task maps
@@ -110,24 +110,17 @@ class EXOTicaInterface(IK):
                 for task_map in self.joint_smoothing_task_maps:
                     task_map.set_previous_joint_state(previous_joint_state)
 
-        if self.previous_solution is not None and self.joint_smoothing_task_maps:
-            for task_map in self.joint_smoothing_task_maps:
-                task_map.set_previous_joint_state(self.previous_solution)
-
         ##############################
         ## Solve problem
 
-        solution = self.solver.solve()[0]
-
-        # Pack solution
-        if solution:
+        solution = JointState(name=self.get_joint_names())
+        try:
+            solution.position = self.solver.solve()[0]
             success = True
             message = 'exotica ik succeeded'
-            solution_ = JointState(name=self.get_joint_names(), position=solution)
-        else:
+        except:
             success = False
             message = 'exotica ik failed'
-            solution_ = JointState(name=self.get_joint_names())
-        solution_.header.stamp = rospy.Time.now()
+        solution.header.stamp = rospy.Time.now()
 
-        return success, message, solution_
+        return success, message, solution
