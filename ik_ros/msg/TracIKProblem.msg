@@ -1,2 +1,3 @@
+std_msgs/Header header
 sensor_msgs/JointState qinit
 geometry_msgs/Transform goal

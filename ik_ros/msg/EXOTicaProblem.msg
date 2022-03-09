@@ -1,3 +1,4 @@
+std_msgs/Header header
 string[] task_map_names
 std_msgs/Float64MultiArray[] task_map_goals
 sensor_msgs/JointState start_state
