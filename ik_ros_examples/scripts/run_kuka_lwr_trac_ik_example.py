@@ -12,17 +12,19 @@ class Node:
         rospy.init_node('run_lwr_trac_ik_example')
         self.tf = TfInterface()
         self.pub = rospy.Publisher('ik', TracIKProblem, queue_size=10)
-        self.qinit = rospy.wait_for_message('rpbi/kuka_lwr/joint_states', JointState)
+        self.trac_ik_problem = TracIKProblem(qinit = rospy.wait_for_message('rpbi/kuka_lwr/joint_states', JointState))
         rospy.Subscriber('rpbi/kuka_lwr/joint_states', JointState, self.callback)
         rospy.Timer(rospy.Duration(1.0/float(rospy.get_param('~hz', 100))), self.loop)
 
     def callback(self, msg):
-        self.qinit = msg
+        self.trac_ik_problem.qinit = msg
 
     def loop(self, event):
         tf = self.tf.get_tf_msg('rpbi/kuka_lwr/base', 'figure_eight')
         if tf:
-            self.pub.publish(TracIKProblem(qinit=self.qinit, goal=tf.transform))
+            self.trac_ik_problem.goal = tf
+            self.trac_ik_problem.header.stamp = rospy.Time.now()
+            self.pub.publish(self.trac_ik_problem)
 
     def spin(self):
         rospy.spin()
