@@ -68,9 +68,6 @@ class EXOTicaInterface(IK):
         # Setup joint smoothing task maps
         self.joint_smoothing_task_maps = [task_map for task_map in self.task_maps.values() if isinstance(task_map, self.joint_smoothing_task_map_types)]
 
-        # Get start state in xml
-        self.xml_start_state = self.problem.start_state.copy()
-
         ##############################
         ## Setup tf syncs
 
