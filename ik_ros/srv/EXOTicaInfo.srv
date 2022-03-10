@@ -1,0 +1,8 @@
+---
+string xml_filename
+bool use_scipy_solver
+string scipy_solver_method
+string[] sync_tf_to_exotica_object
+string[] task_map_names
+string[] task_map_types
+string[] controlled_joint_names

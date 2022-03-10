@@ -6,7 +6,9 @@ import exotica_core_task_maps_py
 import exotica_scipy_solver
 from ik_ros.msg import EXOTicaProblem
 from ik_ros.srv import EXOTica, EXOTicaResponse
+from ik_ros.srv import EXOTicaInfo, EXOTicaInfoResponse
 from rpbi.tf_interface import TfInterface
+
 
 class EXOTicaInterface(IK):
 
@@ -25,15 +27,24 @@ class EXOTicaInterface(IK):
     def __init__(self):
 
         ##############################
+        ## Initialize exotica info
+
+        self.exotica_info = EXOTicaResponse()
+
+        ##############################
         ## Get ROS parameters
         xml_filename = rospy.get_param('~xml_filename')
+        self.exotica_info.xml_filename = xml_filename
 
         # Scipy solver
         use_scipy_solver = rospy.get_param('~use_scipy_solver', False)
         scipy_solver_method = rospy.get_param('~scipy_solver_method', 'SLSQP')
+        self.exotica_info.use_scipy_solver = use_scipy_solver
+        self.exotica_info.scipy_solver_method = scipy_solver_method
 
         # Sync tf to object transform
         sync_tf_to_exotica_object = rospy.get_param('~sync_tf_to_exotica_object', [])
+        self.exotica_info.sync_tf_to_exotica_object = sync_tf_to_exotica_object
 
         ##############################
         ## Setup tf interface
@@ -61,9 +72,13 @@ class EXOTicaInterface(IK):
         # Load scene and task maps
         self.scene = self.problem.get_scene()
         self.task_maps = self.problem.get_task_maps()
+        for name, task_map in self.task_maps.items():
+            self.exotica_info.task_map_names.append(name)
+            self.exotica_info.task_map_types.append(task_map.__name__)
 
         # Get joint names
         self._joint_names = self.scene.get_controlled_joint_names()
+        self.exotica_info.controlled_joint_names = self._joint_names
 
         # Setup joint smoothing task maps
         self.joint_smoothing_task_maps = [task_map for task_map in self.task_maps.values() if isinstance(task_map, self.joint_smoothing_task_map_types)]
@@ -77,6 +92,11 @@ class EXOTicaInterface(IK):
             if exo_parent_frame == "''":
                 exo_parent_frame = ''
             self.sync_tf_to_exotica_object.append({'tf_parent': tf_parent_frame, 'tf_child': tf_child_frame, 'exo_parent': exo_parent_frame, 'exo_child': exo_child_frame})
+
+        ##############################
+        ## Setup services
+
+        rospy.Service('exotica_info', EXOTicaInfo, self.service_exotica_info)
 
     def get_joint_names(self):
         return self._joint_names
@@ -121,3 +141,6 @@ class EXOTicaInterface(IK):
         solution.header.stamp = rospy.Time.now()
 
         return success, message, solution
+
+    def service_exotica_info(self, req):
+        return self.exotica_info

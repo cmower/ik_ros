@@ -23,6 +23,7 @@ add_service_files(
   EXOTica.srv
   TracIK.srv
   JointNames.srv
+  EXOTicaInfo.srv
   )
 
 generate_messages(
