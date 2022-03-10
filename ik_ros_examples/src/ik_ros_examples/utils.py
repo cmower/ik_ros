@@ -27,7 +27,7 @@ class FigureEightNode:
         rospy.init_node('figure_eight_node')
         parent_frame_id = rospy.get_param('~parent_frame_id')
         child_frame_id = rospy.get_param('~child_frame_id')
-        hz = rospy.get_param('~hz', 50)
+        self.hz = rospy.get_param('~hz', 50)
         self.tfBroadcaster = tf2_ros.TransformBroadcaster()
         self.tf = TransformStamped()
         self.tf.header.frame_id = parent_frame_id
@@ -40,7 +40,7 @@ class FigureEightNode:
     def start(self):
         if self.timer is None:
             self.start_time = rospy.Time.now()
-            self.timer = rospy.Timer(rospy.Duration(1.0/float(hz)), self.main_loop)
+            self.timer = rospy.Timer(rospy.Duration(1.0/float(self.hz)), self.main_loop)
             success = True
             message = 'started fig8'
         else:
@@ -64,7 +64,7 @@ class FigureEightNode:
 
         # Grab current time
         time_now = rospy.Time.now() - self.start_time
-        self.tf.header.stamp = time_now
+        self.tf.header.stamp = rospy.Time.now()
 
         # Update transform
         t = time_now.to_sec()
