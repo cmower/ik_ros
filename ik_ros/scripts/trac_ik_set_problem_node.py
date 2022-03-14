@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from rpbi.tf_interface import TfInterface
-from ik_ros.srv import TracIKProblem
+from ik_ros.msg import TracIKProblem
 from sensor_msgs.msg import JointState
 from std_srvs.srv import SetBool, SetBoolResponse
 from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
