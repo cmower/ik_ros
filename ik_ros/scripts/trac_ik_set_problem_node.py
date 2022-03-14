@@ -33,7 +33,7 @@ class Node:
         self.pub = rospy.Publisher('ik', TracIKProblem, queue_size=10)
         hz = rospy.get_param('~hz', 50)
         self.dt = 1.0/float(hz)
-        rospy.Subscriber('joint_states', JointState, self.joint_state_callback)
+        rospy.Subscriber('qinit', JointState, self.joint_state_callback)
         self.timer = None
         ToggleService('toggle_trac_ik_set_problem', self.start, self.stop)
 
