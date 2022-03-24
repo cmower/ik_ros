@@ -23,13 +23,25 @@ class Node:
             self.start()
 
     def start(self):
-        self.timer = rospy.Timer(rospy.Duration(self.dt), self.loop)
-        return True, "started trac_ik_set_problem"
+        if self.timer is None:
+            self.timer = rospy.Timer(rospy.Duration(self.dt), self.loop)
+            success = True
+            message = "started trac_ik_set_problem"
+        else:
+            success = False
+            message = 'tried to start trac_ik_set_problem but it is already running'
+        return success, message
 
     def stop(self):
-        self.timer.shutdown()
-        self.timer = None
-        return True, "stopped trac_ik_set_problem"
+        if self.timer is not None:
+            self.timer.shutdown()
+            self.timer = None
+            success = True
+            message = "stopped trac_ik_set_problem"
+        else:
+            success = False
+            message = 'tried to stop trac_ik_set_problem but it is not running'
+        return success, message
 
     def joint_state_callback(self, msg):
         self.trac_ik_problem.qinit = msg
