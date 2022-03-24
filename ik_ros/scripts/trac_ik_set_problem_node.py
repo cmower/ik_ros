@@ -8,15 +8,22 @@ from custom_srvs.custom_srvs import ToggleService
 class Node:
 
     def __init__(self):
+
+        # Setup node
         rospy.init_node('trac_ik_set_problem_node')
         self.trac_ik_problem = TracIKProblem()
         self.tf = TfInterface()
+
+        # Get parameters
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
         self.child_frame_id = rospy.get_param('~child_frame_id')
+        self.dt = 1.0/float(rospy.get_param('~hz', 50))
+
+        # Setup subscriber and publisher
         self.pub = rospy.Publisher('ik', TracIKProblem, queue_size=10)
-        hz = rospy.get_param('~hz', 50)
-        self.dt = 1.0/float(hz)
         rospy.Subscriber('qinit', JointState, self.joint_state_callback)
+
+        # Final intiailization
         self.timer = None
         ToggleService('toggle_trac_ik_set_problem', self.start, self.stop)
         if rospy.get_param('~start_on_init', False):
@@ -52,6 +59,8 @@ class Node:
             self.trac_ik_problem.goal = tf.transform
             self.trac_ik_problem.header.stamp = rospy.Time.now()
             self.pub.publish(self.trac_ik_problem)
+        else:
+            rospy.logwarn("failed to retrieve tf, cannot setup TracIK problem!")
 
     def spin(self):
         rospy.spin()
