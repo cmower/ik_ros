@@ -19,6 +19,8 @@ class Node:
         rospy.Subscriber('qinit', JointState, self.joint_state_callback)
         self.timer = None
         ToggleService('toggle_trac_ik_set_problem', self.start, self.stop)
+        if rospy.get_param('~start_on_init', False):
+            self.start()
 
     def start(self):
         self.timer = rospy.Timer(rospy.Duration(self.dt), self.loop)
