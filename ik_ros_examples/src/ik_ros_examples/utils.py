@@ -36,6 +36,8 @@ class FigureEightNode:
         self.timer = None
         self.start_time = None
         ToggleService('toggle_fig8', self.start, self.stop)
+        if rospy.get_param('~start_on_init', True):
+            self.start()
 
     def start(self):
         if self.timer is None:
