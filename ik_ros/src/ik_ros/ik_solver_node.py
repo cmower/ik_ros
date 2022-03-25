@@ -1,16 +1,16 @@
 import rospy
+from .node import RosNode
 from sensor_msgs.msg import JointState
 from ik_ros.srv import JointNames, JointNamesResponse
 from custom_srvs.custom_srvs import ToggleService
 
 
-class IKNode:
+class IKSolverNode(RosNode):
 
 
     def __init__(self, IKClass):
 
-        # Initialize ROS
-        rospy.init_node('ik_node')
+        super().__init__('ik_solver')
 
         # Setup class variables
         self.sub = None
@@ -70,7 +70,3 @@ class IKNode:
     def solve_ik(self, req):
         output = self.ik.solve(req.problem)
         return self.ik.srv_resp_type(success=output.success, message=output.message, solution=output.joint_state_msg())
-
-
-    def spin(self):
-        rospy.spin()
