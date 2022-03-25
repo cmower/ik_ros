@@ -1,15 +1,19 @@
 <launch>
 
-  <!-- Produce task space motion (figure of eight) -->
-  <node pkg="ik_ros_examples" name="figure_eight_motion" type="figure_eight_node.py">
-    <param name="parent_frame_id" type="string" value="figure_eight_base"/>
-    <param name="child_frame_id" type="string" value="figure_eight"/>
-  </node>
+  <!-- Generate target motion -->
+  <!-- ====================== -->
 
+  <!-- Figure of eight motion -->
+  <node pkg="ik_ros_examples" name="figure_eight_motion" type="figure_eight_node.py"/>
+
+  <!-- Connect figure of eight motion to world -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
-	args="-0. 0 0.65 0 1.57 3.141 world figure_eight_base"/>
+	args="-0. 0 0.65 0 1.57 3.141 rpbi/world figure_eight_base"/>
 
   <!-- IK -->
+  <!-- == -->
+
+  <!-- Setup IK -->
   <node pkg="ik_ros" name="ik_setup" type="trac_ik_set_problem_node.py" output="screen">
     <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/base"/>
     <param name="child_frame_id" type="str" value="figure_eight"/>
@@ -17,6 +21,7 @@
     <remap from="qinit" to="rpbi/kuka_lwr/joint_states"/>
   </node>
 
+  <!-- IK solver interface -->
   <node pkg="ik_ros" name="ik_node" type="ik_node.py" args="TracIKInterface" output="screen">
     <param name="urdf_filename" type="string" value="{ik_ros_examples}/robots/lwr.urdf"/>
     <param name="tip_link" type="string" value="lwr_arm_7_link"/>
@@ -25,20 +30,15 @@
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>
 
+  <!-- Simulation -->
+  <!-- ========== -->
+
   <!-- ROS-Pybullet interface node simulator -->
   <node pkg="ros_pybullet_interface" name="ros_pybullet_interface_node" type="ros_pybullet_interface_node.py">
     <rosparam param="config" file="$(find ik_ros_examples)/configs/kuka_lwr_trac_ik_example/config.yaml"/>
   </node>
 
-  <!-- Static transforms -->
-  <!-- ================= -->
-
-  <node pkg="tf2_ros" type="static_transform_publisher" name="attach_world_to_rpbi_world"
-	args="0 0 0 0 0 0 world rpbi/world"/>
-
   <!-- Visualization -->
-  <!-- ============= -->
-
   <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ik_ros_examples)/rviz/kuka_lwr_trac_ik_example.rviz" />
 
 </launch>
