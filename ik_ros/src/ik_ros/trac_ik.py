@@ -24,12 +24,6 @@ class TracIKInterface(IK):
         timeout = np.clip(rospy.get_param('~timeout', 0.005), 0.0, np.inf)
         epsilon = np.clip(rospy.get_param('~epsilon', 1e-5), 0.0, np.inf)
         solve_type = rospy.get_param('~solve_type', "Speed")
-        self.bx = rospy.get_param('~bx', 1e-5)
-        self.by = rospy.get_param('~by', 1e-5)
-        self.bz = rospy.get_param('~bz', 1e-5)
-        self.brx = rospy.get_param('~brx', 1e-3)
-        self.bry = rospy.get_param('~bry', 1e-3)
-        self.brz = rospy.get_param('~brz', 1e-3)
 
         # Load solver and get joint names
         with open(replace_package(urdf_filename), 'r') as urdf:
@@ -43,6 +37,7 @@ class TracIKInterface(IK):
     def get_joint_names(self):
         return self._joint_names
 
+
     def solve(self, problem):
 
         # Solve ik problem
@@ -50,7 +45,7 @@ class TracIKInterface(IK):
             self.resolve_joint_position_order(problem.qinit),
             problem.goal.translation.x, problem.goal.translation.y, problem.goal.translation.z,
             problem.goal.rotation.x, problem.goal.rotation.y, problem.goal.rotation.z, problem.goal.rotation.w,
-            self.bx, self.by, self.bz, self.brx, self.bry, self.brz,
+            problem.bx, problem.by, problem.bz, problem.brx, problem.bry, problem.brz,
         )
 
         # Pack solution

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from rpbi.tf_interface import TfInterface
+from std_msgs.msg import Float64
 from ik_ros.msg import TracIKProblem
 from sensor_msgs.msg import JointState
 from custom_srvs.custom_srvs import ToggleService
@@ -17,11 +18,16 @@ class Node:
         # Get parameters
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
         self.child_frame_id = rospy.get_param('~child_frame_id')
-        self.dt = 1.0/float(rospy.get_param('~hz', 50))
+        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))
 
-        # Setup subscriber and publisher
+        # Setup ROS communication
         self.pub = rospy.Publisher('ik', TracIKProblem, queue_size=10)
         rospy.Subscriber('qinit', JointState, self.joint_state_callback)
+
+        params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
+        for k, p in self.params.items():
+            setattr(self.trac_ik_problem, k, p)
+            rospy.Subscriber(k, Float64, self.param_callback, callback_args=k)
 
         # Final intiailization
         self.timer = None
@@ -31,7 +37,7 @@ class Node:
 
     def start(self):
         if self.timer is None:
-            self.timer = rospy.Timer(rospy.Duration(self.dt), self.loop)
+            self.timer = rospy.Timer(self.duration, self.loop)
             success = True
             message = "started trac_ik_set_problem"
         else:
@@ -52,6 +58,9 @@ class Node:
 
     def joint_state_callback(self, msg):
         self.trac_ik_problem.qinit = msg
+
+    def param_callback(self, msg, key):
+        setattr(self.trac_ik_problem, key, msg.data)
 
     def loop(self, event):
         tf = self.tf.get_tf_msg(self.parent_frame_id, self.child_frame_id)

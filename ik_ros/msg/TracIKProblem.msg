@@ -1,3 +1,9 @@
 std_msgs/Header header
 sensor_msgs/JointState qinit
 geometry_msgs/Transform goal
+float64 bx
+float64 by
+float64 bz
+float64 brx
+float64 bry
+float64 brz
