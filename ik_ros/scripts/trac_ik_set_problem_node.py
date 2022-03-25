@@ -25,7 +25,7 @@ class Node:
         rospy.Subscriber('qinit', JointState, self.joint_state_callback)
 
         params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
-        for k, p in self.params.items():
+        for k, p in params.items():
             setattr(self.trac_ik_problem, k, p)
             rospy.Subscriber(k, Float64, self.param_callback, callback_args=k)
 
