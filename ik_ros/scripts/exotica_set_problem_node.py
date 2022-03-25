@@ -2,7 +2,6 @@
 import rospy
 from ik_ros.srv import EXOTicaProblem
 from std_srvs.srv import SetBool, SetBoolResponse
-from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
 from ik_ros.srv import JointNames, JointNamesResponse
 from ik_ros.srv import EXOTicaInfo
 from std_msgs.msg import Float64MultiArray
