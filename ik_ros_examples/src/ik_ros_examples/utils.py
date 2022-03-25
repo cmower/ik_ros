@@ -31,7 +31,7 @@ class FigureEightNode:
     def start(self):
         if self.timer is None:
             self.start_time = rospy.Time.now()
-            self.timer = rospy.Timer(self.duration), self.main_loop)
+            self.timer = rospy.Timer(self.duration, self.main_loop)
             success = True
             message = 'started figure eight'
         else:
