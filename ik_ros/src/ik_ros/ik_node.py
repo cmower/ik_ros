@@ -65,7 +65,7 @@ class IKNode:
         if output.success:
             self.pub.publish(output.joint_state_msg())
         else:
-            rospy.logerr('ik solver failed: %s ', message)
+            rospy.logerr('ik solver failed: %s ', output.message)
 
     def solve_ik(self, req):
         output = self.ik.solve(req.problem)
