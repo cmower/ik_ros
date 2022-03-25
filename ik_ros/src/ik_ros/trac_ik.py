@@ -1,6 +1,7 @@
 import rospy
 import numpy as np
 from .ik_interface import IK
+from .ik_output import IKOutput
 from sensor_msgs.msg import JointState
 from ik_ros.msg import TracIKProblem
 from ik_ros.srv import TracIK, TracIKResponse
@@ -48,15 +49,13 @@ class TracIKInterface(IK):
             problem.bx, problem.by, problem.bz, problem.brx, problem.bry, problem.brz,
         )
 
-        # Pack solution
+        # Pack IK output
         if solution:
             success = True
             message = 'trac_ik succeeded'
-            solution_ = JointState(name=self.get_joint_names(), position=solution)
         else:
             success = False
             message = 'trac_ik failed'
-            solution_ = JointState(name=self.get_joint_names())
-        solution_.header.stamp = rospy.Time.now()
+            solution = []  # before solution is None
 
-        return success, message, solution_
+        return IKOutput(success, message, self.get_joint_names(), solution)

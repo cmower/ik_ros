@@ -61,15 +61,15 @@ class IKNode:
 
 
     def callback(self, problem):
-        success, message, solution = self.ik.solve(problem)
-        if success:
-            self.pub.publish(solution)
+        output = self.ik.solve(problem)
+        if output.success:
+            self.pub.publish(output.joint_state_msg())
         else:
             rospy.logerr('ik solver failed: %s ', message)
 
     def solve_ik(self, req):
-        success, message, solution = self.ik.solve(req.problem)
-        return self.ik.srv_resp_type(success=success, message=message, solution=solution)
+        output = self.ik.solve(req.problem)
+        return self.ik.srv_resp_type(success=output.success, message=output.message, solution=output.joint_state_msg())
 
 
     def spin(self):

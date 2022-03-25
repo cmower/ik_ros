@@ -1,5 +1,6 @@
 import rospy
 from .ik_interface import IK
+from .ik_output import IKOutput
 from sensor_msgs.msg import JointState
 import pyexotica as exo
 import exotica_core_task_maps_py
@@ -130,17 +131,16 @@ class EXOTicaInterface(IK):
         ##############################
         ## Solve problem
 
-        solution = JointState(name=self.get_joint_names())
         try:
-            solution.position = self.solver.solve()[0]
+            solution = self.solver.solve()[0].tolist()
             success = True
             message = 'exotica ik succeeded'
         except:
+            solution = []
             success = False
             message = 'exotica ik failed'
-        solution.header.stamp = rospy.Time.now()
 
-        return success, message, solution
+        return IKOutput(success, message, self.get_joint_names(), solution)
 
     def service_exotica_info(self, req):
         return self.exotica_info
