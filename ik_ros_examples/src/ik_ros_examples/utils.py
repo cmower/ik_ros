@@ -7,27 +7,33 @@ from custom_srvs.custom_srvs import ToggleService
 class FigureEightNode:
 
     def __init__(self):
+
+        # Setup ros node
         rospy.init_node('figure_eight_node')
-        parent_frame_id = rospy.get_param('~parent_frame_id')
-        child_frame_id = rospy.get_param('~child_frame_id')
-        self.hz = rospy.get_param('~hz', 50)
+
+        # Get parameters
+        self.duration = rospy.Duration(1.0/rospy.get_param('~hz', 50))
+
+        # Setup transform and broadcaster
         self.tfBroadcaster = tf2_ros.TransformBroadcaster()
         self.tf = TransformStamped()
-        self.tf.header.frame_id = parent_frame_id
-        self.tf.child_frame_id = child_frame_id
+        self.tf.header.frame_id = 'figure_eight_base'
+        self.tf.child_frame_id = 'figure_eight'
         self.tf.transform.rotation.w = 1.0
+
+        # Setup ROS communication
         self.timer = None
         self.start_time = None
-        ToggleService('toggle_fig8', self.start, self.stop)
+        ToggleService('toggle_figure_eight', self.start, self.stop)
         if rospy.get_param('~start_on_init', True):
             self.start()
 
     def start(self):
         if self.timer is None:
             self.start_time = rospy.Time.now()
-            self.timer = rospy.Timer(rospy.Duration(1.0/float(self.hz)), self.main_loop)
+            self.timer = rospy.Timer(self.duration), self.main_loop)
             success = True
-            message = 'started fig8'
+            message = 'started figure eight'
         else:
             success = False
             message = 'tried to start timer, but it is already running'
@@ -39,7 +45,7 @@ class FigureEightNode:
             self.timer = None
             self.start_time = None
             success = True
-            message = 'stopped fig8'
+            message = 'stopped figure eight'
         else:
             success = False
             message = 'tried to stop timer, but it is not running'
@@ -48,11 +54,11 @@ class FigureEightNode:
     def main_loop(self, event):
 
         # Grab current time
-        time_now = rospy.Time.now() - self.start_time
         self.tf.header.stamp = rospy.Time.now()
 
         # Update transform
-        t = time_now.to_sec()
+        # TODO: expose figure eight parameters to user
+        t = (self.tf.header.stamp - self.start_time).to_sec()
         self.tf.transform.translation.x = np.sin(t * 2.0 * np.pi * 0.5) * 0.1
         self.tf.transform.translation.y = np.sin(t * np.pi * 0.5) * 0.2
 
