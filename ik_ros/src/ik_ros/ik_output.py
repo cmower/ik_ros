@@ -2,6 +2,7 @@ import rospy
 from sensor_msgs.msg import JointState
 from dataclasses import dataclass
 from typing import List
+from ik_ros.msg import IKSolution
 
 @dataclass
 class IKOutput:
@@ -12,5 +13,17 @@ class IKOutput:
 
     def joint_state_msg(self):
         msg = JointState(name=self.joint_names, position=self.solution)
+        msg.header.stamp = rospy.Time.now()
+        return msg
+
+    def solution_msg(self, it, interface_name):
+        msg = IKSolution(
+            interface_name=interface_name,
+            success=self.success,
+            message=self.message,
+            joint_names=self.joint_names,
+            solution=self.solution,
+        )
+        msg.header.seq = it
         msg.header.stamp = rospy.Time.now()
         return msg

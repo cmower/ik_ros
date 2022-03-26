@@ -16,6 +16,7 @@ add_message_files(
   FILES
   EXOTicaProblem.msg
   TracIKProblem.msg
+  IKSolution.msg
 )
 
 add_service_files(
@@ -39,9 +40,8 @@ include_directories(
 )
 
 catkin_install_python(PROGRAMS
-  scripts/ik_node.py
-  scripts/exotica_set_problem_node.py
-  scripts/trac_ik_set_problem_node.py
+  scripts/ik_setup_node.py
+  scripts/ik_solver_node.py
   scripts/tf_to_floatarray_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

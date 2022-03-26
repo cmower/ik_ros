@@ -2,7 +2,7 @@
 import sys
 
 # Import main ik node
-from ik_ros.ik_node import IKSolverNode
+from ik_ros.ik_solver_node import IKSolverNode
 
 # Import all interface classes
 from ik_ros.trac_ik import TracIKInterface
@@ -13,12 +13,12 @@ def main():
     # Get ik interface
     ik_class_str = sys.argv[1]
     try:
-        IKClass = eval(ik_class_str)
+        IKInterfaceClass = eval(ik_class_str)
     except NameError:
-        raise ValueError("Did not recognize user input! In the command line input you must give the class name.")
+        raise ValueError("Did not recognize argument!")
 
     # Start node and spin
-    IKSolverNode(IKClass).spin()
+    IKSolverNode(IKInterfaceClass).spin()
 
 if __name__ == '__main__':
     main()
