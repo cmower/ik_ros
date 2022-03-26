@@ -1,50 +1,36 @@
 #!/usr/bin/env python3
 import rospy
 import tf2_ros
-from std_srvs.srv import SetBool, SetBoolResponse
+from rpbi.tf_interface import TfInterface
 from std_msgs.msg import Float64MultiArray
-
-# import rospy
-# from std_srvs.srv import SetBool, SetBoolResponse
-from rospy.impl.tcpros_base import DEFAULT_BUFF_SIZE
-
-class ToggleService(rospy.Service):
-
-    def __init__(self, name, enable_handler, disable_handler,
-                 buff_size=DEFAULT_BUFF_SIZE, error_handler=None):
-        super(ToggleService, self).__init__(name, SetBool, self.toggle,
-                                            buff_size=buff_size, error_handler=error_handler)
-        self.enable_handler = enable_handler
-        self.disable_handler = disable_handler
-
-    def toggle(self, req):
-        if req.data:
-            success, message = self.enable_handler()
-        else:
-            success, message = self.disable_handler()
-        return SetBoolResponse(success=success, message=message)
+from custom_srvs.custom_srvs import ToggleService
 
 class Node:
 
     def __init__(self):
+
+        # Initialize ROS
         rospy.init_node('tf_to_floatarray_node', anonymous=True)
-        self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
-        self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+
+        # Get parameters
         self.child_frame_id = rospy.get_param('~child_frame_id')
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
-        hz = rospy.get_param('~hz', 50)
-        self.dt = 1.0/float(hz)
-        # rospy.Service('toggle_tf_to_floatarray', SetBool, self.toggle)
-        self.timer = None
-        ToggleService('toggle_tf_to_floatarray', self.start, self.stop)
+        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))
 
-    # def toggle(self, req):
-    #     if req.data:
-    #         success, message = self.start()
-    #     else:
-    #         success, message = self.stop()
-    #     return SetBoolResponse(message=message, success=success)
+        # Setup ros publisher
+        self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
+
+        # Set class attributes
+        self.timer = None
+
+        # Setup transform listener
+        self.tfBuffer = tf2_ros.Buffer()
+        tf2_ros.TransformListener(self.tfBuffer)
+
+        # Setup ROS service
+        ToggleService('toggle_tf_to_floatarray', self.start, self.stop)
+        if rospy.get_param('~start_on_init', False):
+            self.start()
 
     def start(self):
         if (self.timer is None):
