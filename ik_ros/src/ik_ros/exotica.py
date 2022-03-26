@@ -76,6 +76,7 @@ class EXOTicaInterface(IK):
         for name, task_map in self.task_maps.items():
             self.exotica_info.task_map_names.append(name)
             self.exotica_info.task_map_types.append(task_map.__name__)
+            self.exotica_info.task_map_nrho.append(task_map.task_space_dim())
 
         # Get joint names
         self._joint_names = self.scene.get_controlled_joint_names()
