@@ -4,6 +4,12 @@ from sensor_msgs.msg import JointState
 from ik_ros.srv import JointNames, JointNamesResponse
 from custom_srvs.custom_srvs import ToggleService
 
+"""
+
+This script defines the main solver node.
+
+"""
+
 
 class IKSolverNode(RosNode):
 
