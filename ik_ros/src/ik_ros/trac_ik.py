@@ -11,6 +11,7 @@ class TracIKInterface(IK):
 
     """Interface to trac_ik: https://bitbucket.org/traclabs/trac_ik.git"""
 
+    name = 'trac_ik'
     problem_msg_type = TracIKProblem
     srv_type = TracIK
     srv_resp_type = TracIKResponse

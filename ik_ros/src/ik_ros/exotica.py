@@ -14,6 +14,7 @@ class EXOTicaInterface(IK):
 
     """Interface to Exotica: https://github.com/ipab-slmc/exotica"""
 
+    name = 'exotica'
     problem_msg_type = EXOTicaProblem
     srv_type = EXOTica
     srv_resp_type = EXOTicaResponse

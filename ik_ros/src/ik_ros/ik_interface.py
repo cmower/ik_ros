@@ -7,6 +7,11 @@ class IK(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def name(self):
+        pass
+
+    @property
+    @abstractmethod
     def problem_msg_type(self):
         pass
 
