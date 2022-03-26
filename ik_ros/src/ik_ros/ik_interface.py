@@ -44,7 +44,12 @@ class IK(metaclass=ABCMeta):
     ## Other methods
 
     def resolve_joint_position_order(self, joint_state_msg):
-        return [
-            joint_state_msg.position[joint_state_msg.name.index(name)]
-            for name in self.get_joint_names()
-        ]
+        position = []
+        for name in self.get_joint_names():
+            if name in joint_state_msg.name:
+                idx = joint_state_msg.name.index(name)
+                position.append(joint_state_msg.position[idx])
+            else:
+                # Position not given -> fill with 0.0
+                position.append(0.0)
+        return position
