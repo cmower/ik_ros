@@ -13,6 +13,7 @@ IK.solve method should output an instance of IKOutput.
 
 @dataclass
 class IKOutput:
+
     success: bool
     message: str
     joint_names: List[str]
