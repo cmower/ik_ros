@@ -3,6 +3,13 @@ from rpbi.tf_interface import TfInterface
 from .node import RosNode
 from abc import abstractmethod
 
+"""
+
+This script defines the template class for a ROS node that collects
+parameters and sends it to the solver node.
+
+"""
+
 class IKSetupNode(RosNode):
 
     def __init__(self, interface_name):
