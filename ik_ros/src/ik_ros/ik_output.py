@@ -4,6 +4,13 @@ from dataclasses import dataclass
 from typing import List
 from ik_ros.msg import IKSolution
 
+"""
+
+This script defines a dataclass for the output of a IK interface. The
+IK.solve method should output an instance of IKOutput.
+
+"""
+
 @dataclass
 class IKOutput:
     success: bool
