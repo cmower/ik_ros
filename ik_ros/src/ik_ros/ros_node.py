@@ -2,6 +2,12 @@ import rospy
 from custom_srvs.custom_srvs import ToggleService
 from abc import ABCMeta, abstractmethod
 
+"""
+
+This script defines an abstract ROS node class.
+
+"""
+
 class RosNode(metaclass=ABCMeta):
 
     def __init__(self, node_name, interface_name):
