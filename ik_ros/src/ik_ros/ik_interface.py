@@ -1,5 +1,9 @@
 from abc import ABCMeta, abstractmethod
 
+"""
+This script defines the main template class for an IK interface.
+"""
+
 class IK(metaclass=ABCMeta):
 
     ###########################
