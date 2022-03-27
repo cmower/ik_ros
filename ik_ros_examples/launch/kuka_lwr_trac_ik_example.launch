@@ -14,7 +14,7 @@
   <!-- == -->
 
   <!-- Setup IK -->
-  <node pkg="ik_ros" name="ik_setup" type="trac_ik_set_problem_node.py" output="screen">
+  <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="trac_ik" output="screen">
     <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/base"/>
     <param name="child_frame_id" type="str" value="figure_eight"/>
     <param name="start_on_init" type="bool" value="true"/>
@@ -22,11 +22,11 @@
   </node>
 
   <!-- IK solver interface -->
-  <node pkg="ik_ros" name="ik_node" type="ik_node.py" args="TracIKInterface" output="screen">
+  <node pkg="ik_ros" name="ik_node" type="ik_solver_node.py" args="trac_ik" output="screen">
     <param name="urdf_filename" type="string" value="{ik_ros_examples}/robots/lwr.urdf"/>
     <param name="tip_link" type="string" value="lwr_arm_7_link"/>
     <param name="base_link" type="string" value="base"/>
-    <param name="start_callback_on_init" type="bool" value="true"/>
+    <param name="start_on_init" type="bool" value="true"/>
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>
 
