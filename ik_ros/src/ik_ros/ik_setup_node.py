@@ -1,6 +1,6 @@
 import rospy
 from rpbi.tf_interface import TfInterface
-from .node import RosNode
+from .ros_node import RosNode
 from abc import abstractmethod
 
 """

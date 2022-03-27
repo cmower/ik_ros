@@ -1,5 +1,5 @@
 import rospy
-from ik_ros.ik_setup_node import IKSetupNode
+from ..ik_setup_node import IKSetupNode
 from std_msgs.msg import Float64
 from ik_ros.msg import TracIKProblem
 from sensor_msgs.msg import JointState

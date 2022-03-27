@@ -1,6 +1,6 @@
 import rospy
-from .ik_interface import IK
-from .ik_output import IKOutput
+from ..ik_interface import IK
+from ..ik_output import IKOutput
 import pyexotica as exo
 import exotica_core_task_maps_py
 import exotica_scipy_solver

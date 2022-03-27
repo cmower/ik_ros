@@ -1,7 +1,8 @@
 import rospy
-from .node import RosNode
+from .ros_node import RosNode
 from sensor_msgs.msg import JointState
 from ik_ros.srv import JointNames, JointNamesResponse
+from ik_ros.msg import IKSolution
 from custom_srvs.custom_srvs import ToggleService
 
 """

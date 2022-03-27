@@ -1,7 +1,7 @@
 import rospy
 from std_msgs.msg import Float64MultiArray
-from ik_ros.ik_setup_node import IKSetupNode
-from ik_ros.srv import EXOTicaProblem
+from ..ik_setup_node import IKSetupNode
+from ik_ros.msg import EXOTicaProblem
 from ik_ros.srv import EXOTicaInfo
 
 class EXOTicaSetupNode(IKSetupNode):

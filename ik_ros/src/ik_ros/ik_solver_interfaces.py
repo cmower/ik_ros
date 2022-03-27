@@ -1,8 +1,8 @@
-from .trac_ik_setup import TracIKSetupNode
-from .exotica_setup import EXOTicaSetupNode
+from .trac_ik.setup_node import TracIKSetupNode
+from .exotica.setup_node import EXOTicaSetupNode
 
-from .trac_ik import TracIKInterface
-from .exotica import EXOTicaInterface
+from .trac_ik.interface import TracIKInterface
+from .exotica.interface import EXOTicaInterface
 
 """
 
