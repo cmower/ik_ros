@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import tf2_ros
+import tf_conversions
 from std_msgs.msg import Float64MultiArray
 from custom_srvs.custom_srvs import ToggleService
 
@@ -15,6 +16,13 @@ class Node:
         self.child_frame_id = rospy.get_param('~child_frame_id')
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
         self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))
+        self.rot_as_eul = rospy.get_param('~rot_as_eul', False)
+
+        # Setup publish method
+        if self.rot_as_eul:
+            self.publish = self.publish_tf_as_pos_eul
+        else:
+            self.publish = self.publish_tf_as_pos_quat
 
         # Setup ros publisher
         self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
@@ -56,6 +64,28 @@ class Node:
             rospy.logerr(message)
         return success, message
 
+    def publish_tf_as_pos_quat(self, tf):
+        self.pub.publish(Float64MultiArray(data=[
+            tf.transform.translation.x,
+            tf.transform.translation.y,
+            tf.transform.translation.z,
+            tf.transform.rotation.x,
+            tf.transform.rotation.y,
+            tf.transform.rotation.z,
+            tf.transform.rotation.w,
+        ]))
+
+    def publish_tf_as_pos_eul(self, tf):
+        eul = tf_conversions.transformations.euler_from_quaternion([getattr(tf.transform.rotation, dim) for dim in 'xyzw'])
+        self.pub.publish(Float64MultiArray(data=[
+            tf.transform.translation.x,
+            tf.transform.translation.y,
+            tf.transform.translation.z,
+            eul[0],
+            eul[1],
+            eul[2],
+        ]))
+
     def main_loop(self, event):
 
         # Grab transform
@@ -66,15 +96,11 @@ class Node:
             return
 
         # Publish transform as float array
-        self.pub.publish(Float64MultiArray(data=[
-            tf.transform.translation.x,
-            tf.transform.translation.y,
-            tf.transform.translation.z,
-            tf.transform.rotation.x,
-            tf.transform.rotation.y,
-            tf.transform.rotation.z,
-            tf.transform.rotation.w,
-        ]))
+        # NOTE: self.publish method is set in init, it is either
+        # publish_tf_as_pos_quat (default) or publish_tf_as_pos_eul -
+        # this is determined by the value of the ROS parameter
+        # '~rot_as_eul'.
+        self.publish(tf)
 
     def spin(self):
         rospy.spin()
