@@ -22,17 +22,17 @@ class TracIKSetupNode(IKSetupNode):
 
         params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
         for k, p in params.items():
-            setattr(self.trac_ik_problem, k, p)
+            setattr(self.problem, k, p)
             rospy.Subscriber(k, Float64, self.param_callback, callback_args=k)
 
         # Final intiailization
         self.post_init()
 
     def joint_state_callback(self, msg):
-        self.trac_ik_problem.qinit = msg
+        self.problem.qinit = msg
 
     def param_callback(self, msg, key):
-        setattr(self.trac_ik_problem, key, msg.data)
+        setattr(self.problem, key, msg.data)
 
     def pack_problem(self):
         tf = self.tf.get_tf_msg(self.parent_frame_id, self.child_frame_id)
