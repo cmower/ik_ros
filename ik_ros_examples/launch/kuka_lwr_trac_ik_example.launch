@@ -18,7 +18,7 @@
     <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/base"/>
     <param name="child_frame_id" type="str" value="figure_eight"/>
     <param name="start_on_init" type="bool" value="true"/>
-    <remap from="qinit" to="rpbi/kuka_lwr/joint_states"/>
+    <remap from="ik/setup/trac_ik/qinit" to="rpbi/kuka_lwr/joint_states"/>
   </node>
 
   <!-- IK solver interface -->
