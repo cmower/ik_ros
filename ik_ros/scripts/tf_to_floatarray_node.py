@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import rospy
 import tf2_ros
-from rpbi.tf_interface import TfInterface
 from std_msgs.msg import Float64MultiArray
 from custom_srvs.custom_srvs import ToggleService
 
