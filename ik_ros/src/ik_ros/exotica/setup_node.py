@@ -30,7 +30,7 @@ class EXOTicaSetupNode(IKSetupNode):
 
         # Setup subscribers
         for task_map_name in self.exotica_info.task_map_names:
-            topic_name = f'ik/exotica/task_map_goal/{task_map_name}'
+            topic_name = f'{self.ns}/task_map_goal/{task_map_name}'
             rospy.Subscriber(
                 topic_name,
                 Float64MultiArray,
@@ -38,7 +38,7 @@ class EXOTicaSetupNode(IKSetupNode):
                 callback_args=task_map_name
             )
 
-        rospy.Subscriber('previous_solutions', JointState, self.previous_solutions_callback)
+        rospy.Subscriber(f'{self.ns}/previous_solutions', JointState, self.previous_solutions_callback)
 
         # Final intiailization
         self.post_init()

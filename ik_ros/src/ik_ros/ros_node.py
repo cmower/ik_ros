@@ -13,8 +13,9 @@ class RosNode(metaclass=ABCMeta):
     def __init__(self, node_name, interface_name):
         self.node_name = node_name
         self.interface_name = interface_name
+        self.ns = f'ik/{node_name}/{interface_name}'
         rospy.init_node(f'{node_name}_{interface_name}', anonymous=True)
-        ToggleService(f'ik/{self.node_name}/{self.interface_name}/toggle', self.enable, self.disable)
+        ToggleService(f'{self.ns}/toggle', self.enable, self.disable)
 
     def post_init(self):
         """Must be called at the end of __init__ in sub-class."""

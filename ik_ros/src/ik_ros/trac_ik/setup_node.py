@@ -18,12 +18,12 @@ class TracIKSetupNode(IKSetupNode):
         self.child_frame_id = rospy.get_param('~child_frame_id')
 
         # Setup ROS communication
-        rospy.Subscriber('qinit', JointState, self.joint_state_callback)
+        rospy.Subscriber(f'{self.ns}/qinit', JointState, self.joint_state_callback)
 
         params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
         for k, p in params.items():
             setattr(self.problem, k, p)
-            rospy.Subscriber(k, Float64, self.param_callback, callback_args=k)
+            rospy.Subscriber(f'{self.ns}/{k}', Float64, self.param_callback, callback_args=k)
 
         # Final intiailization
         self.post_init()

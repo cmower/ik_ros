@@ -32,8 +32,8 @@ class IKSolverNode(RosNode):
         self.soln_pub = rospy.Publisher('ik/solution', IKSolution, queue_size=10)
 
         # Setup ros services
-        rospy.Service(f'{self.node_name}/{self.interface_name}/solve', self.ik.srv_type, self.service_solve_ik)
-        rospy.Service(f'{self.node_name}/{self.interface_name}/joint_names', JointNames, self.service_joint_names)
+        rospy.Service(f'{self.ns}/solve', self.ik.srv_type, self.service_solve_ik)
+        rospy.Service(f'{self.ns}/joint_names', JointNames, self.service_joint_names)
 
         # Post initialization
         self.post_init()
