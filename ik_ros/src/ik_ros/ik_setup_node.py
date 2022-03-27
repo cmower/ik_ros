@@ -28,7 +28,7 @@ class IKSetupNode(RosNode):
         self.problem = self.problem_type()
 
         # Setup class attributes
-        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz' 50))) # node sampling freq
+        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50))) # node sampling freq
 
     @property
     @abstractmethod
