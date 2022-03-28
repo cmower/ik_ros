@@ -33,10 +33,11 @@ class IKSetupNode(RosNode):
     @property
     @abstractmethod
     def problem_type(self):
+        # Output: IK problem type (defined in ik_ros/msg)
         pass
 
     @abstractmethod
-    def pack_problem(self):
+    def pack_problem(self) -> bool:
         """Packs the problem, returns true if the problem is ok to publish"""
         pass
 
