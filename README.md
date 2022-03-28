@@ -22,6 +22,7 @@ The package has been designed to be extensible so additional solvers or custom I
 
 To add a new interface you need to implement the following:
 1. Add an IK problem message to `ik_ros/msg` (remember to include in `ik_ros/CMakeLists.txt`)
+    * this must contain a header, i.e. add the line `std_msgs/Header header`
     * this file should contain the relevant problem parameters
     * typically this is variables that change at solve time
     * do not include solver initialization variables here, these should be parameters set in the IK solver node
