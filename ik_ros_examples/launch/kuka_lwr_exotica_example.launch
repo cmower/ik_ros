@@ -39,6 +39,6 @@
   </node>
 
   <!-- Visualization -->
-  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ik_ros_examples)/rviz/kuka_lwr_trac_ik_example.rviz" />
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ik_ros_examples)/rviz/kuka_lwr_example.rviz" />
 
 </launch>
