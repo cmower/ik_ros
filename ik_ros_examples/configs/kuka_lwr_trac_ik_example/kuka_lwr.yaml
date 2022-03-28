@@ -1,7 +1,7 @@
 name: "kuka_lwr"
 
 loadURDF:
-  fileName: "{rpbi_examples}/robots/kuka_lwr.urdf"
+  fileName: "{ik_ros_examples}/robots/lwr.urdf"
   useFixedBase: 1
 
 object_tf:

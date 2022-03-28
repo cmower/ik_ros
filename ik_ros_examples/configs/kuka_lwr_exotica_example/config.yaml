@@ -1,0 +1,33 @@
+#
+# Pybullet instance
+#
+connect:
+  connection_mode: 'GUI'
+
+gravity: [0.0, 0.0, -9.81]
+timeStep: 0.01
+start_pybullet_after_initialization: true
+status_hz: 50
+
+#
+# Pybullet visualizer
+#
+configureDebugVisualizer:
+  enable: 0
+  flag: 'COV_ENABLE_GUI'
+
+resetDebugVisualizerCamera:
+  cameraDistance: 2.0
+  cameraYaw: 0.0
+  cameraPitch: -45.0
+  cameraTargetPosition: [0.0, 0.0, 0.0]
+
+#
+# Pybullet objects
+#
+visual_object:
+  - "{ik_ros_examples}/configs/kuka_lwr_trac_ik_example/sphere.yaml"
+collision_objects:
+  - "{rpbi_examples}/configs/floor.yaml"
+robots:
+  - "{ik_ros_examples}/configs/kuka_lwr_exotica_example/kuka_lwr.yaml"
