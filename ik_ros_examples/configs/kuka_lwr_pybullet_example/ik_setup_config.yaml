@@ -1,0 +1,5 @@
+robot_name: "kuka_lwr"
+link_name: "lwr_arm_7_link"
+
+parent_frame_id: "rpbi/world"
+child_frame_id: "figure_eight"
