@@ -40,7 +40,6 @@ class EXOTicaSetupNode(IKSetupNode):
                 exo_parent_frame = ''
             self.sync_tf_to_exotica_object.append({'tf_parent': tf_parent_frame, 'tf_child': tf_child_frame, 'exo_parent': exo_parent_frame, 'exo_child': exo_child_frame})
 
-
         # Setup subscribers
         for task_map_name in self.exotica_info.task_map_names:
             topic_name = f'{self.ns}/task_map_goal/{task_map_name}'
