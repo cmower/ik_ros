@@ -38,4 +38,5 @@ To add a new interface you need to implement the following:
 * [trac_ik](https://bitbucket.org/traclabs/trac_ik.git)
 * [EXOTica](https://github.com/ipab-slmc/exotica)
 * [RBDL](https://rbdl.github.io/) (in development)
-* [pybullet](https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.9i02ojf4k3ve) (in development)
+* [pybullet](https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.9i02ojf4k3ve)
+    * *Note*, this uses the [ROS-Pybullet Interface](https://github.com/cmower/ros_pybullet_interface)
