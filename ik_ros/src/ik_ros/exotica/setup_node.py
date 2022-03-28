@@ -3,6 +3,7 @@ from std_msgs.msg import Float64MultiArray
 from ..ik_setup_node import IKSetupNode
 from ik_ros.msg import EXOTicaProblem
 from ik_ros.srv import EXOTicaInfo
+from sensor_msgs.msg import JointState
 
 class EXOTicaSetupNode(IKSetupNode):
 
@@ -39,11 +40,12 @@ class EXOTicaSetupNode(IKSetupNode):
             )
 
         rospy.Subscriber(f'{self.ns}/previous_solutions', JointState, self.previous_solutions_callback)
+        rospy.Subscriber(f'{self.ns}/start_state', JointState, self.start_state_callback)
 
         # Final intiailization
         self.post_init()
 
-    def task_map_callback(self, msg, task_map_name):
+    def task_map_goal_callback(self, msg, task_map_name):
         idx = self.problem.task_map_names.index(task_map_name)
         self.problem.task_map_goals[idx].data = msg.data
 
