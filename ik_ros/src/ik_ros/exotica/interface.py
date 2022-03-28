@@ -57,11 +57,15 @@ class EXOTicaInterface(IK):
 
         # Load problem and solver
         solver = None
+        solver_in_xml = True
         try:
             solver = exo.Setup.load_solver(xml_filename)
-        except RunTimeError as e:
-            rospy.loginfo('no solver specified in EXOTica XML, defaulting to Scipy solver')
-            use_scipy_solver = True
+        except RuntimeError as e:
+            rospy.logwarn('no solver specified in EXOTica XML')
+            solver_in_xml = False
+
+        if (not use_scipy_solver) and (not solver_in_xml):
+            raise ValueError("no solver specified: neither in EXOTica XML, and use_scipy_solver is False")
 
         if not use_scipy_solver:
             self.solver = solver
@@ -73,9 +77,10 @@ class EXOTicaInterface(IK):
         # Load scene and task maps
         self.scene = self.problem.get_scene()
         self.task_maps = self.problem.get_task_maps()
+
         for name, task_map in self.task_maps.items():
             self.exotica_info.task_map_names.append(name)
-            self.exotica_info.task_map_types.append(task_map.__name__)
+            self.exotica_info.task_map_types.append(task_map.type)
             self.exotica_info.task_map_nrho.append(task_map.task_space_dim())
 
         # Get joint names
@@ -118,9 +123,9 @@ class EXOTicaInterface(IK):
         if problem.start_state.position:
             self.problem.start_state = self.resolve_joint_position_order(problem.start_state)
 
-        # Update task maps
+        # Update problem goals
         for name, goal in zip(problem.task_map_names, problem.task_map_goals):
-            self.task_maps[name].set_goal(goal)
+            self.problem.set_goal(name, goal.data)
 
         # Update joint smoothing task maps
         if problem.previous_solutions and self.joint_smoothing_task_maps:
