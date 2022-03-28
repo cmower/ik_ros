@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
-from ik_output import IKOutput
+from .ik_output import IKOutput
 from sensor_msgs.msg import JointState
 
 """
