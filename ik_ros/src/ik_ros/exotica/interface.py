@@ -30,7 +30,7 @@ class EXOTicaInterface(IK):
         ##############################
         ## Initialize exotica info
 
-        self.exotica_info = EXOTicaResponse()
+        self.exotica_info = EXOTicaInfoResponse()
 
         ##############################
         ## Get ROS parameters
