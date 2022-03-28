@@ -5,7 +5,7 @@ This package provides a standardized interface for IK solvers and ROS.
 
 # System overview
 
-![alt text](https://raw.githubusercontent.com/cmower/ik_ros/master/doc/ik_ros_sys_overview.png?token=GHSAT0AAAAAABRI27ND4GWNUSHRKSDVTQ3KYSBBN3Q)
+![alt text](https://raw.githubusercontent.com/cmower/ik_ros/master/doc/ik_ros_sys_overview.png)
 
 The figure above shows an overview for `ik_ros`.
 Two nodes are provided (green) that setup the problem, and solve the problem.
