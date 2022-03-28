@@ -27,15 +27,16 @@ class Node:
         self.tf = TfInterface()
 
         # Get parameters
-        interface_name = sys.argv[1]
+        self.interface_name = sys.argv[1]
         robot_name = rospy.get_param('~robot_name')
         self.eff_name = rospy.get_param('~eff_name')
 
         # Get service handles
         self.move_to_eff_state = get_srv_handle(f'rpbi/{robot_name}/move_to_eff_state', ResetEffState)
         self.start_figure_eight = get_srv_handle('toggle_figure_eight', SetBool)
-        self.start_ik_setup_node = get_srv_handle(f'ik/setup/{interface_name}/toggle', SetBool)
-        self.start_ik_solver_node = get_srv_handle(f'ik/solver/{interface_name}/toggle', SetBool)
+        self.start_ik_setup_node = get_srv_handle(f'ik/setup/{self.interface_name}/toggle', SetBool)
+        if self.interface_name != 'pybullet':
+            self.start_ik_solver_node = get_srv_handle(f'ik/solver/{self.interface_name}/toggle', SetBool)
 
     def move_to_start_pose(self):
 
@@ -65,7 +66,8 @@ class Node:
 
     def start_figure_eight_motion(self):
         self.start_ik_setup_node(True)
-        self.start_ik_solver_node(True)
+        if self.interface_name != 'pybullet':
+            self.start_ik_solver_node(True)
         self.start_figure_eight(True)
 
 

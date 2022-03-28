@@ -1,8 +1,10 @@
 from .trac_ik.setup_node import TracIKSetupNode
 from .exotica.setup_node import EXOTicaSetupNode
+from .pybullet.setup_node import PybulletSetupNode
 
 from .trac_ik.interface import TracIKInterface
 from .exotica.interface import EXOTicaInterface
+# NOTE: pybullet does not have an interface (see README.md in ik_ros/src/ik_ros/pybullet)
 
 """
 
@@ -23,4 +25,5 @@ class SolverInterface:
 solver_interfaces = {
     'trac_ik': SolverInterface(TracIKSetupNode, TracIKInterface),
     'exotica': SolverInterface(EXOTicaSetupNode, EXOTicaInterface),
+    'pybullet': SolverInterface(PybulletSetupNode, None),
 }
