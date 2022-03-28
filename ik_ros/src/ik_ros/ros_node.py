@@ -14,7 +14,7 @@ class RosNode(metaclass=ABCMeta):
         self.node_name = node_name
         self.interface_name = interface_name
         self.ns = f'ik/{node_name}/{interface_name}'
-        rospy.init_node(f'{node_name}_{interface_name}', anonymous=True)
+        rospy.init_node(f'ik_{node_name}_{interface_name}', anonymous=True)
         ToggleService(f'{self.ns}/toggle', self.enable, self.disable)
 
     def post_init(self):
