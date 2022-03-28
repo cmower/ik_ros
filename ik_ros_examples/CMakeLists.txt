@@ -18,7 +18,6 @@ include_directories(
 
 catkin_install_python(PROGRAMS
   scripts/figure_eight_node.py
-  scripts/run_kuka_lwr_exotica_example.py
-  scripts/run_kuka_lwr_trac_ik_example.py
+  scripts/run_example.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
