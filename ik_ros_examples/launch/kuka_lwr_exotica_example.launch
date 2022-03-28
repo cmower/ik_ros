@@ -18,6 +18,9 @@
   <!-- Setup IK -->
   <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="exotica" output="screen">
     <param name="start_on_init" type="bool" value="false"/>
+    <rosparam param="sync_tf_to_exotica_object">[
+    "rpbi/kuka_lwr/base figure_eight '' Target",
+    ]</rosparam>
     <remap from="ik/setup/exotica/start_state" to="rpbi/kuka_lwr/joint_states"/>
     <remap from="ik/setup/exotica/previous_solutions" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>
@@ -25,10 +28,6 @@
   <!-- IK solver interface -->
   <node pkg="ik_ros" name="ik_solver" type="ik_solver_node.py" args="exotica" output="screen">
     <param name="xml_filename" type="str" value="{ik_ros_examples}/configs/kuka_lwr_exotica_example/kuka_lwr.xml"/>
-    <rosparam param="sync_tf_to_exotica_object">[
-    "rpbi/kuka_lwr/base figure_eight '' Target",
-    ]</rosparam>
-    <param name="start_on_init" type="bool" value="true"/>
     <param name="start_on_init" type="bool" value="false"/>
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>

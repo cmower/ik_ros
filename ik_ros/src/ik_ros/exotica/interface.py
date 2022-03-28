@@ -7,7 +7,6 @@ import exotica_scipy_solver
 from ik_ros.msg import EXOTicaProblem
 from ik_ros.srv import EXOTica, EXOTicaResponse
 from ik_ros.srv import EXOTicaInfo, EXOTicaInfoResponse
-from rpbi.tf_interface import TfInterface
 
 
 class EXOTicaInterface(IK):
@@ -42,15 +41,6 @@ class EXOTicaInterface(IK):
         scipy_solver_method = rospy.get_param('~scipy_solver_method', 'SLSQP')
         self.exotica_info.use_scipy_solver = use_scipy_solver
         self.exotica_info.scipy_solver_method = scipy_solver_method
-
-        # Sync tf to object transform
-        sync_tf_to_exotica_object = rospy.get_param('~sync_tf_to_exotica_object', [])
-        self.exotica_info.sync_tf_to_exotica_object = sync_tf_to_exotica_object
-
-        ##############################
-        ## Setup tf interface
-
-        self.tf = TfInterface()
 
         ##############################
         ## Load EXOTica
@@ -91,16 +81,6 @@ class EXOTicaInterface(IK):
         self.joint_smoothing_task_maps = [task_map for task_map in self.task_maps.values() if isinstance(task_map, self.joint_smoothing_task_map_types)]
 
         ##############################
-        ## Setup tf syncs
-
-        self.sync_tf_to_exotica_object = []
-        for spec in sync_tf_to_exotica_object:
-            tf_parent_frame, tf_child_frame, exo_parent_frame, exo_child_frame = spec.split(' ')
-            if exo_parent_frame == "''":
-                exo_parent_frame = ''
-            self.sync_tf_to_exotica_object.append({'tf_parent': tf_parent_frame, 'tf_child': tf_child_frame, 'exo_parent': exo_parent_frame, 'exo_child': exo_child_frame})
-
-        ##############################
         ## Setup services
 
         rospy.Service('exotica_info', EXOTicaInfo, self.service_exotica_info)
@@ -114,10 +94,8 @@ class EXOTicaInterface(IK):
         ## Setup problem
 
         # Update transform frames
-        for spec in self.sync_tf_to_exotica_object:
-            pos, rot = self.tf.get_tf(spec['tf_parent'], spec['tf_child'])
-            if pos is None: continue
-            self.scene.attach_object_local(spec['exo_child'], spec['exo_parent'], pos+rot)
+        for spec in problem.sync_tf:
+            self.scene.attach_object_local(spec.exo_child, spec.exo_parent, spec.transform)
 
         # Update problem start state
         if problem.start_state.position:

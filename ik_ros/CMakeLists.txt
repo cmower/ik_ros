@@ -17,6 +17,7 @@ add_message_files(
   EXOTicaProblem.msg
   TracIKProblem.msg
   IKSolution.msg
+  EXOTicaSyncTf.msg
 )
 
 add_service_files(
