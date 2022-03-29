@@ -3,7 +3,6 @@ import rospy
 import tf2_ros
 import tf_conversions
 from std_msgs.msg import Float64MultiArray
-from custom_srvs.custom_srvs import ToggleService
 
 class Node:
 
@@ -27,42 +26,12 @@ class Node:
         # Setup ros publisher
         self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
 
-        # Set class attributes
-        self.timer = None
-
         # Setup transform listener
         self.tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(self.tfBuffer)
 
-        # Setup ROS service
-        ToggleService('toggle_tf_to_floatarray', self.start, self.stop)
-        if rospy.get_param('~start_on_init', False):
-            self.start()
-
-    def start(self):
-        if (self.timer is None):
-            self.timer = rospy.Timer(rospy.Duration(self.dt), self.main_loop)
-            success = True
-            message = 'started tf_to_floatarray node'
-            rospy.loginfo(message)
-        else:
-            success = False
-            message = 'user attempted to start tf_to_floatarray node, but it is already running!'
-            rospy.logerr(message)
-        return success, message
-
-    def stop(self):
-        if (self.timer is not None):
-            self.timer.shutdown()
-            self.timer = None
-            success = True
-            message = 'stopped tf_to_floatarray node'
-            rospy.loginfo(message)
-        else:
-            success = False
-            message = 'user attempted to stop tf_to_floatarray node, but it is not running!'
-            rospy.logerr(message)
-        return success, message
+        # Start main loop
+        rospy.Timer(rospy.Duration(self.dt), self.main_loop)
 
     def publish_tf_as_pos_quat(self, tf):
         self.pub.publish(Float64MultiArray(data=[
