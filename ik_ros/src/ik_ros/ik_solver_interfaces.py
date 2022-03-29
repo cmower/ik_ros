@@ -1,12 +1,12 @@
-from .trac_ik.setup_node import TracIKSetupNode
-from .exotica.setup_node import EXOTicaSetupNode
-from .pybullet.setup_node import PybulletSetupNode
-from .rbdl.setup_node import RBDLSetupNode
+from .trac_ik_interface.setup_node import TracIKSetupNode
+from .exotica_interface.setup_node import EXOTicaSetupNode
+from .pybullet_interface.setup_node import PybulletSetupNode
+from .rbdl_interface.setup_node import RBDLSetupNode
 
-from .trac_ik.interface import TracIKInterface
-from .exotica.interface import EXOTicaInterface
+from .trac_ik_interface.interface import TracIKInterface
+from .exotica_interface.interface import EXOTicaInterface
 # NOTE: pybullet does not have an interface (see README.md in ik_ros/src/ik_ros/pybullet)
-from .rbdl.interface import RBDLInterface
+from .rbdl_interface.interface import RBDLInterface
 
 """
 
