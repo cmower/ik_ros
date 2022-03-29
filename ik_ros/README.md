@@ -62,7 +62,7 @@ Subscribers are interface specific.
 
   Start state for the optimizer.
 
-##### Pybullet setup node subscriber
+#### Pybullet setup node subscriber
 
 * `ik/setup/pybullet/currentPosition` ([sensor_msgs/JointState](http://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/JointState.html))
 
