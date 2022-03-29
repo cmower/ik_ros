@@ -14,7 +14,7 @@ class Node:
         # Get parameters
         self.child_frame_id = rospy.get_param('~child_frame_id')
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
-        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))
+        self.duration = rospy.Duration(1.0/float(abs(rospy.get_param('~hz', 50))))
         self.mode = rospy.get_param('~mode', 'pos+quat')
 
         # Setup publish method
