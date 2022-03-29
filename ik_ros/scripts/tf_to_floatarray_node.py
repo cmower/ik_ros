@@ -31,7 +31,7 @@ class Node:
         tf2_ros.TransformListener(self.tfBuffer)
 
         # Start main loop
-        rospy.Timer(rospy.Duration(self.dt), self.main_loop)
+        rospy.Timer(self.duration, self.main_loop)
 
     def publish_tf_as_pos_quat(self, tf):
         self.pub.publish(Float64MultiArray(data=[
