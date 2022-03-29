@@ -30,7 +30,12 @@
   </material>
   <property name="M_PI" value="3.1415926535897931" />
 
-  <link name="base">
+  <link name="base_link">
+    <inertial>
+      <mass value="0.00000"/>
+      <inertia ixx="0.00000" ixy="0" ixz="0" iyy="0.00000" iyz="0" izz="0.00000"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -365,7 +370,7 @@
 
   <joint name="base_joint" type="fixed">
     <origin rpy="0 0 3.14159265359" xyz="0 0 0.02"/>
-    <parent link="base"/>
+    <parent link="base_link"/>
     <child link="lwr_arm_0_link"/>
   </joint>
   <joint name="lwr_arm_0_joint" type="revolute">

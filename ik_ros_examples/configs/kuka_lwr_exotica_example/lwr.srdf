@@ -15,11 +15,11 @@
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <!--<end_effector name="eff" parent_link="lwr_arm_7_link" group="arm" />-->
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="world_joint" type="fixed" parent_frame="world_frame" child_link="base" />
+    <virtual_joint name="world_joint" type="fixed" parent_frame="world_frame" child_link="base_link" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
-    <disable_collisions link1="base" link2="lwr_arm_0_link" reason="Adjacent" />
-    <disable_collisions link1="base" link2="lwr_arm_1_link" reason="Never" />
-    <disable_collisions link1="base" link2="lwr_arm_2_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="lwr_arm_0_link" reason="Adjacent" />
+    <disable_collisions link1="base_link" link2="lwr_arm_1_link" reason="Never" />
+    <disable_collisions link1="base_link" link2="lwr_arm_2_link" reason="Never" />
     <disable_collisions link1="lwr_arm_0_link" link2="lwr_arm_1_link" reason="Adjacent" />
     <disable_collisions link1="lwr_arm_0_link" link2="lwr_arm_2_link" reason="Never" />
     <disable_collisions link1="lwr_arm_0_link" link2="lwr_arm_3_link" reason="Never" />
