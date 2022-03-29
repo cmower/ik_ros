@@ -15,13 +15,17 @@ class Node:
         self.child_frame_id = rospy.get_param('~child_frame_id')
         self.parent_frame_id = rospy.get_param('~parent_frame_id')
         self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))
-        self.rot_as_eul = rospy.get_param('~rot_as_eul', False)
+        self.mode = rospy.get_param('~mode', 'pos+quat')
 
         # Setup publish method
-        if self.rot_as_eul:
+        if self.mode == 'pos+eul':
             self.publish = self.publish_tf_as_pos_eul
-        else:
+        elif self.mode == 'pos+quat':
             self.publish = self.publish_tf_as_pos_quat
+        elif self.mode == 'pos':
+            self.publish = self.publish_tf_as_pos
+        else:
+            raise ValueError("did not recognize mode! use either: 'pos', 'pos+eul', 'pos+quat'")
 
         # Setup ros publisher
         self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
@@ -32,6 +36,13 @@ class Node:
 
         # Start main loop
         rospy.Timer(self.duration, self.main_loop)
+
+    def publish_tf_as_pos(self, tf):
+        self.pub.publish(Float64MultiArray(data=[
+            tf.transform.translation.x,
+            tf.transform.translation.y,
+            tf.transform.translation.z,
+        ]))
 
     def publish_tf_as_pos_quat(self, tf):
         self.pub.publish(Float64MultiArray(data=[
@@ -65,10 +76,8 @@ class Node:
             return
 
         # Publish transform as float array
-        # NOTE: self.publish method is set in init, it is either
-        # publish_tf_as_pos_quat (default) or publish_tf_as_pos_eul -
-        # this is determined by the value of the ROS parameter
-        # '~rot_as_eul'.
+        # NOTE: self.publish method is set in init, it is determined
+        # by the ROS parameter '~mode'.
         self.publish(tf)
 
     def spin(self):
