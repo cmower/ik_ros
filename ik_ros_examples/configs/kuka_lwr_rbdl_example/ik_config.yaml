@@ -2,9 +2,9 @@
 # PyBullet IK configuration file
 #
 name: "kuka_lwr"   # must be same name as in pybullet robot config
-file_name: "{ik_ros_examples}/robots/lwr.urdf"
+file_name: "{ik_ros_examples}/robots/kuka_lwr.urdf"
 end_effector: "lwr_arm_7_link"
-base_link_name: "rpbi/kuka_lwr/base_link"
+base_link_name: "rpbi/kuka_lwr/lwr_arm_0_link"
 
 IK:
   # 0-3 orienation, 3-6 position, 0-6 both orienation and position
