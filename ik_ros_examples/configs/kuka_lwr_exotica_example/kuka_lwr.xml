@@ -8,8 +8,8 @@
     <PlanningScene>
       <Scene>
         <JointGroup>arm</JointGroup>
-        <URDF>{ik_ros_examples}/robots/lwr.urdf</URDF>
-        <SRDF>{ik_ros_examples}/robots/lwr.srdf</SRDF>
+        <URDF>{ik_ros_examples}/configs/kuka_lwr_exotica_example/lwr.urdf</URDF>
+        <SRDF>{ik_ros_examples}/configs/kuka_lwr_exotica_example/lwr.srdf</SRDF>
         <Links>
           <Link Name="Target"/>
         </Links>
