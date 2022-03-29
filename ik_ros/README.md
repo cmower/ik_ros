@@ -140,7 +140,7 @@ The following has mainly been taken from the [Pybullet Quickstart Guide](https:/
 
 * `~config/solver` (int)
 
- 0 (p.IK_DLS) or 1 (p.IK_SDLS), Damped Least Squares or Selective Damped Least Squares, as described in the paper by Samuel Buss "Selectively Damped Least Squares for Inverse Kinematics".
+  0 (p.IK_DLS) or 1 (p.IK_SDLS), Damped Least Squares or Selective Damped Least Squares, as described in the paper by Samuel Buss "Selectively Damped Least Squares for Inverse Kinematics".
 
 * `~config/maxNumIterations` (int)
 
