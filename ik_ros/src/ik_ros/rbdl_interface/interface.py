@@ -27,9 +27,7 @@ class PyRBDLRobot:
         # Load Robot rbdl model
         # TODO: consider if we can support non floating base robots
         file_name = replace_package(file_name)
-        print("-------- here")
         self.rbdlModel = rbdl.loadModel(file_name, verbose = True, floating_base = True)
-        print("-------- here")
 
         # Get end-effector body for rbdl
         self.rbdlEndEffectorID = rbdl.Model.GetBodyId(self.rbdlModel, end_effector_name)
