@@ -3,6 +3,8 @@
 Inverse kinematics integration for ROS.
 This package provides a standardized interface for IK solvers and ROS.
 
+**NOTE**: this package is apart of a wider framework that is planned to be made publicly available in the near future. As such, the examples will not currently work.
+
 # System overview
 
 ![alt text](https://github.com/cmower/ik_ros/blob/master/doc/ik_ros_sys_overview.png?raw=true)
