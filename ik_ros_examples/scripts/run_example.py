@@ -2,19 +2,11 @@
 import sys
 import time
 import rospy
-from rpbi.tf_interface import TfInterface
+from custom_ros_tools.tf import TfInterface
 from std_srvs.srv import SetBool
 from ros_pybullet_interface.msg import CalculateInverseKinematicsProblem
 from ros_pybullet_interface.srv import ResetEffState, ResetEffStateRequest
-
-def get_srv_handle(srv_name, srv_type):
-    handle = None
-    rospy.wait_for_service(srv_name)
-    try:
-        handle = rospy.ServiceProxy(srv_name, srv_type)
-    except rospy.ServiceException as e:
-        rospy.logerr(f"service call failed: {str(e)}")
-    return handle
+from custom_ros_tools.ros_comm import get_srv_handler
 
 class Node:
 
@@ -32,11 +24,11 @@ class Node:
         self.eff_name = rospy.get_param('~eff_name')
 
         # Get service handles
-        self.move_to_eff_state = get_srv_handle(f'rpbi/{robot_name}/move_to_eff_state', ResetEffState)
-        self.start_figure_eight = get_srv_handle('toggle_figure_eight', SetBool)
-        self.start_ik_setup_node = get_srv_handle(f'ik/setup/{self.interface_name}/toggle', SetBool)
+        self.move_to_eff_state = get_srv_handler(f'rpbi/{robot_name}/move_to_eff_state', ResetEffState)
+        self.start_figure_eight = get_srv_handler('toggle_figure_eight', SetBool)
+        self.start_ik_setup_node = get_srv_handler(f'ik/setup/{self.interface_name}/toggle', SetBool)
         if self.interface_name != 'pybullet':
-            self.start_ik_solver_node = get_srv_handle(f'ik/solver/{self.interface_name}/toggle', SetBool)
+            self.start_ik_solver_node = get_srv_handler(f'ik/solver/{self.interface_name}/toggle', SetBool)
 
     def move_to_start_pose(self):
 
