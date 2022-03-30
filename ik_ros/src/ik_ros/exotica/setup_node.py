@@ -5,7 +5,7 @@ from ik_ros.msg import EXOTicaProblem
 from ik_ros.srv import EXOTicaInfo
 from ik_ros.msg import EXOTicaSyncTf
 from sensor_msgs.msg import JointState
-from rpbi.tf_interface import TfInterface
+from custom_ros_tools.tf import TfInterface
 
 class EXOTicaSetupNode(IKSetupNode):
 

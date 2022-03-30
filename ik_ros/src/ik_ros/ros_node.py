@@ -1,5 +1,5 @@
 import rospy
-from custom_srvs.custom_srvs import ToggleService
+from custom_ros_tools.ros_comm import ToggleService
 from abc import ABCMeta, abstractmethod
 
 """

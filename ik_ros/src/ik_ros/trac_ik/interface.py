@@ -4,7 +4,7 @@ from ..ik_interface import IK
 from ..ik_output import IKOutput
 from ik_ros.msg import TracIKProblem
 from ik_ros.srv import TracIK, TracIKResponse
-from rpbi.config import replace_package
+from custom_ros_tools.config import replace_package
 from trac_ik_python.trac_ik_wrap import TRAC_IK
 
 class TracIKInterface(IK):
