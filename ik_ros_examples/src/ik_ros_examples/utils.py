@@ -2,7 +2,7 @@ import rospy
 import tf2_ros
 import numpy as np
 from geometry_msgs.msg import TransformStamped
-from custom_srvs.custom_srvs import ToggleService
+from custom_ros_tools.ros_comm import ToggleService
 
 class FigureEightNode:
 
