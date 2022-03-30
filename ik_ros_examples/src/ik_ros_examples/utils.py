@@ -1,6 +1,6 @@
 import rospy
-import tf2_ros
 import numpy as np
+from custom_ros_tools.tf import TfInterface
 from geometry_msgs.msg import TransformStamped
 from custom_ros_tools.ros_comm import ToggleService
 
@@ -15,7 +15,7 @@ class FigureEightNode:
         self.duration = rospy.Duration(1.0/rospy.get_param('~hz', 50))
 
         # Setup transform and broadcaster
-        self.tfBroadcaster = tf2_ros.TransformBroadcaster()
+        self.tf_interface = TfInterface()
         self.tf = TransformStamped()
         self.tf.header.frame_id = 'figure_eight_base'
         self.tf.child_frame_id = 'figure_eight'
@@ -63,7 +63,7 @@ class FigureEightNode:
         self.tf.transform.translation.y = np.sin(t * np.pi * 0.5) * 0.2
 
         # Broadcast transform
-        self.tfBroadcaster.sendTransform(self.tf)
+        self.tf_interface.tf_broadcaster.sendTransform(self.tf)
 
     def spin(self):
         rospy.spin()
