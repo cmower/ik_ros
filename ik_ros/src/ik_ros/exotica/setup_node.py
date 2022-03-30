@@ -76,7 +76,7 @@ class EXOTicaSetupNode(IKSetupNode):
             pos, rot = self.tf.get_tf(spec['tf_parent'], spec['tf_child'])
             if pos is None: continue
             sync_tf = EXOTicaSyncTf(**spec)
-            sync_tf.transform = pos+rot
+            sync_tf.transform = pos.tolist()+rot.tolist()
             sync_tf_ls.append(sync_tf)
         self.problem.sync_tf = sync_tf_ls
 
