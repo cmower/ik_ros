@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
-import tf2_ros
 import tf_conversions
+from custom_ros_tools.tf import TfInterface
 from std_msgs.msg import Float64MultiArray
 
 class Node:
@@ -30,41 +30,22 @@ class Node:
         # Setup ros publisher
         self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
 
-        # Setup transform listener
-        self.tfBuffer = tf2_ros.Buffer()
-        tf2_ros.TransformListener(self.tfBuffer)
+        # Setup tf interface
+        self.tf = TfInterface()
 
         # Start main loop
         rospy.Timer(self.duration, self.main_loop)
 
     def publish_tf_as_pos(self, tf):
-        self.pub.publish(Float64MultiArray(data=[
-            tf.transform.translation.x,
-            tf.transform.translation.y,
-            tf.transform.translation.z,
-        ]))
+        self.pub.publish(Float64MultiArray(data=self.tf.msg_to_pos(tf)))
 
     def publish_tf_as_pos_quat(self, tf):
-        self.pub.publish(Float64MultiArray(data=[
-            tf.transform.translation.x,
-            tf.transform.translation.y,
-            tf.transform.translation.z,
-            tf.transform.rotation.x,
-            tf.transform.rotation.y,
-            tf.transform.rotation.z,
-            tf.transform.rotation.w,
-        ]))
+        p, q = self.tf.msg_to_pos_quat(tf)
+        self.pub.publish(Float64MultiArray(data=p.tolist()+q.tolist()))
 
     def publish_tf_as_pos_eul(self, tf):
-        eul = tf_conversions.transformations.euler_from_quaternion([getattr(tf.transform.rotation, dim) for dim in 'xyzw'])
-        self.pub.publish(Float64MultiArray(data=[
-            tf.transform.translation.x,
-            tf.transform.translation.y,
-            tf.transform.translation.z,
-            eul[0],
-            eul[1],
-            eul[2],
-        ]))
+        p, e = self.tf.msg_to_pos_eul(tf)
+        self.pub.publish(Float64MultiArray(data=p.tolist()+e.tolist())
 
     def main_loop(self, event):
 
