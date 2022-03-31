@@ -20,8 +20,13 @@ class TracIKSetupNode(IKSetupNode):
         # Setup ROS communication
         rospy.Subscriber(f'{self.ns}/qinit', JointState, self.joint_state_callback)
 
-        params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
-        for k, p in params.items():
+        default_params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
+        for k, dp in default_params.items():
+            param_name = '~init_'+k
+            if rospy.has_param(param_name):
+                p = rospy.get_param(param_name)
+            else:
+                p = dp
             setattr(self.problem, k, p)
             rospy.Subscriber(f'{self.ns}/{k}', Float64, self.param_callback, callback_args=k)
 

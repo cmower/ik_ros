@@ -96,6 +96,30 @@ Parameters specific to each interface are described in the following.
 
   Frame ID for the parent frame.
 
+* `~init_bx` (double, default: 1e-5)
+
+  Initial X allowed bound (initial value 1e-5).
+
+* `~init_by` (double, default: 1e-5)
+
+  Initial Y allowed bound (initial value 1e-5).
+
+* `~init_bz` (double, default: 1e-5)
+
+  Initial Z allowed bound (initial value 1e-5).
+
+* `~init_brx` (double, default: 1e-3)
+
+  Initial rotation over X allowed bound.
+
+* `~init_bry` (double, default: 1e-3)
+
+  Initial rotation over Y allowed bound.
+
+* `~init_brz` (double, default: 1e-3)
+
+  Initial rotation over Z allowed bound.
+
 ##### EXOTica setup node parameters
 
 * `~max_num_prev_solutions` (int, default: 1)
