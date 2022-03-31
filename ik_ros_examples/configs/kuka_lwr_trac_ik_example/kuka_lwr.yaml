@@ -18,7 +18,7 @@ initial_joint_position:
 
 is_visual_robot: false
 
-setJointMotorControlArrayParameters:
+setJointMotorControlArray:
   controlMode: "POSITION_CONTROL"
 
 enabled_joint_force_torque_sensors: ["lwr_arm_6_joint"]
