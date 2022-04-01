@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List
 from .ik_output import IKOutput
 from sensor_msgs.msg import JointState
+from custom_ros_tools.robot import resolve_joint_order
 
 """
 This script defines the main template class for an IK interface.
@@ -51,12 +52,4 @@ class IK(metaclass=ABCMeta):
     ## Other methods
 
     def resolve_joint_position_order(self, joint_state_msg: JointState) -> List[float]:
-        position = []
-        for name in self.get_joint_names():
-            if name in joint_state_msg.name:
-                idx = joint_state_msg.name.index(name)
-                position.append(joint_state_msg.position[idx])
-            else:
-                # Position not given -> fill with 0.0
-                position.append(0.0)
-        return position
+        return resolve_joint_order(joint_state_msg, self.get_joint_names()).position
