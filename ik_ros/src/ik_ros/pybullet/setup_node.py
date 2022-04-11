@@ -47,6 +47,9 @@ class PybulletSetupNode(IKSetupNode):
         # Setup subscribers
         rospy.Subscriber(f'{self.ns}/currentPosition', JointState, self.current_position_callback)
 
+        # Final intiailization
+        self.post_init()
+
     def current_position_callback(self, msg):
         current_position = []
         for joint in self.robot_info.joint_info:
