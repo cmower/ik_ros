@@ -13,12 +13,17 @@ class FigureEightNode:
 
         # Get parameters
         self.duration = rospy.Duration(1.0/rospy.get_param('~hz', 50))
+        tf_ns = rospy.get_param('~tf_ns', '')
 
         # Setup transform and broadcaster
         self.tf_interface = TfInterface()
         self.tf = TransformStamped()
         self.tf.header.frame_id = 'figure_eight_base'
         self.tf.child_frame_id = 'figure_eight'
+        if tf_ns:
+            self.tf.header.frame_id = tf_ns + '/' + self.tf.header.frame_id
+            self.tf.child_frame_id = tf_ns + '/' + self.tf.child_frame_id
+
         self.tf.transform.rotation.w = 1.0
 
         # Setup ROS communication
