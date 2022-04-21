@@ -142,16 +142,15 @@ class Node:
         problem.goal.rotation.w = init_eff_rot[3]
         return problem
 
-    def move_to_start_pose_using_interface(self):
 
+    def move_to_start_pose_using_interface(self):
         setup_problem = getattr(self, f'setup_{self.interface_name}_problem')
         resp = self.solve_ik(setup_problem())
         if resp.success:
             self.move_to_joint_state(resp.solution, self.move_to_start_duration)
         else:
-            rospy.logerr('failed to solve IK')
-            sys.exit(0)
-
+            rospy.logerr('failed to solve IK using given interface, using pybullet to solve IK')
+            self.move_to_start_pose_using_pybullet()
 
     def start_figure_eight_motion(self):
         self.start_ik_setup_node(True)
