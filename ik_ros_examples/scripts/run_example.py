@@ -118,7 +118,6 @@ class Node:
             )
             pos, rot = self.tf.get_tf(tf_parent_frame, tf_child_frame)
             sync_tf.transform = pos.tolist()+rot.tolist()
-            # rospy.logwarn(pos, rot)
             problem.sync_tf.append(sync_tf)
 
         return problem
