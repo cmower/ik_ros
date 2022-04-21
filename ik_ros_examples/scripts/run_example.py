@@ -3,6 +3,7 @@ import sys
 import time
 import rospy
 from custom_ros_tools.tf import TfInterface
+from geometry_msgs.msg import Transform
 from std_msgs.msg import Float64MultiArray
 from std_srvs.srv import SetBool
 from ik_ros.srv import EXOTicaInfo
@@ -123,7 +124,23 @@ class Node:
         return problem
 
     def setup_trac_ik_problem(self):
-        raise NotImplementedError("setup_trac_ik_problem has not been implemented")
+        problem = TracIKProblem()
+        default_params = {'bx': 1e-5, 'by': 1e-5, 'bz': 1e-5, 'brx': 1e-3, 'bry': 1e-3, 'brz': 1e-3}
+        for k, dp in default_params.items():
+            param_name = '~init_'+k
+            if rospy.has_param(param_name):
+                p = rospy.get_param(param_name)
+            else:
+                p = dp
+            setattr(problem, k, p)
+        problem.qinit = rospy.wait_for_message(f'rpbi/{self.robot_name}/joint_states', JointState)
+        init_eff_pos, init_eff_rot = self.get_start_pose()
+        problem.goal = Transform()
+        for i, d in enumerate('xyz'):
+            setattr(problem.goal.translation, d, init_eff_pos[i])
+            setattr(problem.goal.rotation, d, init_eff_rot[i])
+        problem.goal.rotation.w = init_eff_rot[3]
+        return problem
 
     def move_to_start_pose_using_interface(self):
 
