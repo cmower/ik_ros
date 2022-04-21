@@ -10,7 +10,7 @@
 
   <!-- Connect figure of eight motion to world -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
-	args="-0. 0 0.65 0 1.57 3.141 rpbi/world figure_eight_base"/>
+	args="-0.5 0 0.65 0 1.57 3.141 rpbi/world figure_eight_base"/>
 
   <!-- IK -->
   <!-- == -->
