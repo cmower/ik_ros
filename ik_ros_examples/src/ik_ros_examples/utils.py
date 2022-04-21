@@ -63,7 +63,7 @@ class FigureEightNode:
 
         # Update transform
         # TODO: expose figure eight parameters to user
-        t = (self.tf.header.stamp - self.start_time).to_sec()
+        t = (self.tf.header.stamp - self.start_time).to_sec()*0.4
         self.tf.transform.translation.x = np.sin(t * 2.0 * np.pi * 0.5) * 0.1
         self.tf.transform.translation.y = np.sin(t * np.pi * 0.5) * 0.2
 
