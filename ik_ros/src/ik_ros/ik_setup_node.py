@@ -17,6 +17,9 @@ class IKSetupNode(RosNode):
         # Setup ros
         super().__init__('setup', interface_name)
 
+        # Set interface name ROS parameter
+        rospy.set_param('ik_ros/interface', interface_name)
+
         # Setup tf interface
         self.tf = TfInterface()
 
