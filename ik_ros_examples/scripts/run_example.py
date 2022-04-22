@@ -52,6 +52,13 @@ class Node:
             self.solve_ik = get_srv_handler(f'ik/solver/{self.interface_name}/solve', srv_type)
             self.move_to_start_pose = self.move_to_start_pose_using_interface
 
+        # Handle real robot
+        if rospy.get_param('real_robot', False):
+            self.sync_real_robot_with_pybullet()
+
+    def sync_real_robot_with_pybullet(self):
+        pass
+
     def get_start_pose(self):
 
         timeout = 10.0
