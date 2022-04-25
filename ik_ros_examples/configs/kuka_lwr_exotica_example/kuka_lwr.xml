@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <IKSolverDemoConfig>
 
-  <SnoptIKUnconstrainedSolver Name="MySolver" MaxIterations="100"/>
+  <IKSolver Name="MySolver" MaxIterations="100"/>
 
   <UnconstrainedEndPoseProblem Name="MyProblem">
 
