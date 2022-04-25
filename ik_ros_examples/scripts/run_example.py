@@ -52,6 +52,18 @@ class Node:
             self.solve_ik = get_srv_handler(f'ik/solver/{self.interface_name}/solve', srv_type)
             self.move_to_start_pose = self.move_to_start_pose_using_interface
 
+        # Handle real robot
+        self.toggle_remapper = None
+        self.real_robot = rospy.get_param('real_robot', False)
+        if self.real_robot:
+            self.toggle_remapper = get_srv_handler('remap_joint_state_to_floatarray/toggle', SetBool)
+            self.sync_pybullet_with_real_robot()
+
+    def sync_pybullet_with_real_robot(self):
+        duration = 0.1
+        self.move_to_joint_state(rospy.wait_for_message('joint_states', JointState), duration)
+        rospy.sleep(2)
+
     def get_start_pose(self):
 
         timeout = 10.0
@@ -80,6 +92,10 @@ class Node:
         duration = self.move_to_start_duration
         req = ResetEffStateRequest(problem=problem, duration=duration)
 
+        # Start remapper
+        if self.real_robot:
+            self.toggle_remapper(True)
+
         # Move robot
         self.move_to_eff_state(req)
 
@@ -100,7 +116,11 @@ class Node:
             Float64MultiArray(data=[0.0]*nrho)
             for nrho in exotica_info.task_map_nrho
         ]
-        problem.start_state = rospy.wait_for_message(f'rpbi/{self.robot_name}/joint_states', JointState)
+        if self.real_robot:
+            topic = 'joint_states'
+        else:
+            topic = f'rpbi/{self.robot_name}/joint_states'
+        problem.start_state = rospy.wait_for_message(topic, JointState)
         problem.previous_solutions = [problem.start_state]
 
         problem.sync_tf = []
@@ -132,7 +152,11 @@ class Node:
             else:
                 p = dp
             setattr(problem, k, p)
-        problem.qinit = rospy.wait_for_message(f'rpbi/{self.robot_name}/joint_states', JointState)
+        if self.real_robot:
+            topic = 'joint_states'
+        else:
+            topic = f'rpbi/{self.robot_name}/joint_states'
+        problem.qinit = rospy.wait_for_message(topic, JointState)
         init_eff_pos, init_eff_rot = self.get_start_pose()
         problem.goal = Transform()
         for i, d in enumerate('xyz'):
@@ -146,6 +170,10 @@ class Node:
         setup_problem = getattr(self, f'setup_{self.interface_name}_problem')
         resp = self.solve_ik(setup_problem())
         if resp.success:
+            # Start remapper
+            if self.real_robot:
+                self.toggle_remapper(True)
+                rospy.sleep(0.5)
             self.move_to_joint_state(resp.solution, self.move_to_start_duration)
         else:
             rospy.logerr('failed to solve IK using given interface, using pybullet to solve IK')
