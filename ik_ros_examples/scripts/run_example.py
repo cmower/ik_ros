@@ -53,11 +53,15 @@ class Node:
             self.move_to_start_pose = self.move_to_start_pose_using_interface
 
         # Handle real robot
-        if rospy.get_param('real_robot', False):
-            self.sync_real_robot_with_pybullet()
+        self.toggle_remapper = None
+        self.real_robot = rospy.get_param('real_robot', False)
+        if self.real_robot:
+            self.toggle_remapper = get_srv_handler('remap_joint_state_to_floatarray/toggle', SetBool)
+            self.sync_pybullet_with_real_robot()
 
-    def sync_real_robot_with_pybullet(self):
-        pass
+    def sync_pybullet_with_real_robot(self):
+        duration = 0.2
+        self.move_to_joint_state(rospy.wait_for_message('joint_states', JointState), duration)
 
     def get_start_pose(self):
 
@@ -86,6 +90,10 @@ class Node:
         # Setup request
         duration = self.move_to_start_duration
         req = ResetEffStateRequest(problem=problem, duration=duration)
+
+        # Start remapper
+        if self.real_robot:
+            self.toggle_remapper(True)
 
         # Move robot
         self.move_to_eff_state(req)
@@ -153,6 +161,9 @@ class Node:
         setup_problem = getattr(self, f'setup_{self.interface_name}_problem')
         resp = self.solve_ik(setup_problem())
         if resp.success:
+            # Start remapper
+            if self.real_robot:
+                self.toggle_remapper(True)
             self.move_to_joint_state(resp.solution, self.move_to_start_duration)
         else:
             rospy.logerr('failed to solve IK using given interface, using pybullet to solve IK')
