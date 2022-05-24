@@ -22,7 +22,7 @@ from custom_ros_tools.ros_comm import get_srv_handler
 
 class Node:
 
-    move_to_start_duration = 2.0
+    move_to_start_duration = 3.0
 
     def __init__(self):
 
@@ -186,9 +186,6 @@ class Node:
         problem.current_position = rospy.wait_for_message(topic, JointState)
         init_eff_pos, init_eff_rot = self.get_start_pose()
         problem.target_EE_transform = Transform()
-
-        rospy.logwarn(' x y z %f %f %f', init_eff_pos[0], init_eff_pos[1], init_eff_pos[2])
-
         for i, d in enumerate('xyz'):
             setattr(problem.target_EE_transform.translation, d, init_eff_pos[i])
             setattr(problem.target_EE_transform.rotation, d, init_eff_rot[i])
