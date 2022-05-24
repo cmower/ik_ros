@@ -54,8 +54,6 @@ class PyRBDLRobot:
         # and the scalar part of the quaternion is last after all the joints
         self.q[3:6] = self.qBaseOrientQuat[0:3]
         self.q[-1] = self.qBaseOrientQuat[3]
-        print(self.qInitial.size)
-        print(self.numJoints-6)
 
         self.q[6:self.numJoints] = self.qInitial
 
@@ -186,6 +184,7 @@ class PyRBDL4dIK:
     def computeDelta(self, globalTargetPos3D, globalTargetOri3D):
         # retrieve global position of the end-effector
         global_eePos = self.robot.getCurEEPos()
+
         # position error
         dpos = globalTargetPos3D - global_eePos
 
@@ -237,9 +236,7 @@ class PyRBDL4dIK:
                                J_arm) @ ((self.h_delta-qprev)*(1/self.h_norm**2))
 
         if (abs(dq) > np.deg2rad(5)).any():
-            print("---------------------------------------------------------------")
-            print(" BIG STEP IN IK ")
-            print("---------------------------------------------------------------")
+            rospy.logwarn('To big of a step for differential IK')
 
         # compute new configuration
         qnext = qprev + dq + self.alpha_null*dq_nullspace_motion
@@ -327,10 +324,6 @@ class RBDLInterface(IK):
         target_EE_ori = R.from_quat(np.asarray(
             [transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w]))
         target_EE_orientation = target_EE_ori.as_matrix()
-
-        # Update current joint position
-        self.robotIK.robot.updateJointConfig(
-            np.array(self.resolve_joint_position_order(problem.current_position)))
 
         # Solve problem and update robotik
         try:
