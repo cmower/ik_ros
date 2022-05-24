@@ -11,6 +11,8 @@ from ik_ros.srv import EXOTica
 from ik_ros.msg import EXOTicaProblem, EXOTicaSyncTf
 from ik_ros.srv import TracIK
 from ik_ros.msg import TracIKProblem
+from ik_ros.srv import RBDL
+from ik_ros.msg import RBDLProblem
 from sensor_msgs.msg import JointState
 from ros_pybullet_interface.msg import CalculateInverseKinematicsProblem
 from ros_pybullet_interface.srv import ResetEffState, ResetEffStateRequest
@@ -20,7 +22,7 @@ from custom_ros_tools.ros_comm import get_srv_handler
 
 class Node:
 
-    move_to_start_duration = 5.0
+    move_to_start_duration = 2.0
 
     def __init__(self):
 
@@ -54,6 +56,9 @@ class Node:
             elif self.interface_name == 'exotica':
                 srv_type = EXOTica
                 self.interface_problem_type = EXOTicaProblem
+            elif self.interface_name == 'rbdl':
+                srv_type = RBDL
+                self.interface_problem_type = RBDLProblem
             self.solve_ik = get_srv_handler(f'ik/solver/{self.interface_name}/solve', srv_type)
             self.move_to_start_pose = self.move_to_start_pose_using_interface
 
@@ -170,18 +175,40 @@ class Node:
         problem.goal.rotation.w = init_eff_rot[3]
         return problem
 
+    def setup_rbdl_problem(self):
+        problem = RBDLProblem()
+
+        if self.real_robot:
+            topic = 'joint_states'
+        else:
+            topic = f'rpbi/{self.robot_name}/joint_states'
+
+        problem.current_position = rospy.wait_for_message(topic, JointState)
+        init_eff_pos, init_eff_rot = self.get_start_pose()
+        problem.target_EE_transform = Transform()
+
+        rospy.logwarn(' x y z %f %f %f', init_eff_pos[0], init_eff_pos[1], init_eff_pos[2])
+
+        for i, d in enumerate('xyz'):
+            setattr(problem.target_EE_transform.translation, d, init_eff_pos[i])
+            setattr(problem.target_EE_transform.rotation, d, init_eff_rot[i])
+        problem.target_EE_transform.rotation.w = init_eff_rot[3]
+        return problem
+
     def move_to_start_pose_using_interface(self):
         setup_problem = getattr(self, f'setup_{self.interface_name}_problem')
-        resp = self.solve_ik(setup_problem())
-        if resp.success:
-            # Start remapper
-            if self.real_robot:
-                self.toggle_remapper(True)
-                rospy.sleep(0.5)
-            self.move_to_joint_state(resp.solution, self.move_to_start_duration)
-        else:
-            rospy.logerr('failed to solve IK using given interface, using pybullet to solve IK')
-            self.move_to_start_pose_using_pybullet()
+
+        for i in range(6):
+            resp = self.solve_ik(setup_problem())
+            if resp.success:
+                # Start remapper
+                if self.real_robot:
+                    self.toggle_remapper(True)
+                    rospy.sleep(0.5)
+                self.move_to_joint_state(resp.solution, self.move_to_start_duration)
+            else:
+                rospy.logerr('failed to solve IK using given interface, using pybullet to solve IK')
+                self.move_to_start_pose_using_pybullet()
 
     def start_figure_eight_motion(self):
         self.start_ik_setup_node(True)
