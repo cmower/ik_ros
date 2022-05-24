@@ -37,5 +37,6 @@ class RBDLSetupNode(IKSetupNode):
             self.problem.target_EE_transform = tf.transform
             return True
         else:
-            rospy.logwarn("failed to retrieve tf, cannot setup RBDL problem!")
+            rospy.logwarn("failed to retrieve tf, cannot setup RBDL problem! for parent %s and child %s ",
+                          self.parent_frame_id, self.child_frame_id)
             return False
