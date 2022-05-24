@@ -5,18 +5,20 @@
 
   <!-- Figure of eight motion -->
   <node pkg="ik_ros_examples" name="figure_eight_motion" type="figure_eight_node.py">
+    <param name="hz" type="double" value="50"/>
     <param name="start_on_init" type="bool" value="false"/>
   </node>
 
   <!-- Connect figure of eight motion to world -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
-	args="-0. 0 0.65 0 1.57 3.141 rpbi/world figure_eight_base"/>
+	args="-0.55 0.2 0.6 0 1.57 3.141 rpbi/world figure_eight_base"/>
 
   <!-- IK -->
   <!-- == -->
 
   <!-- Setup IK -->
   <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="rbdl" output="screen">
+    <param name="hz" type="double" value="100"/>
     <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/lwr_arm_0_link"/>
     <param name="child_frame_id" type="str" value="figure_eight"/>
     <param name="start_on_init" type="bool" value="false"/>
