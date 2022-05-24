@@ -1,0 +1,26 @@
+#
+# PyBullet IK configuration file
+#
+name: "kuka_lwr"   # must be same name as in pybullet robot config
+file_name: "{ik_ros_examples}/robots/kuka_lwr.urdf"
+end_effector: "lwr_arm_7_link"
+base_link_name: "rpbi/kuka_lwr/lwr_arm_0_link"
+
+IK:
+  # 0-3 orienation, 3-6 position, 0-6 both orienation and position
+  # first index in IK
+  f_indx : 0
+  # last index in IK
+  l_indx : 6
+
+  # weights for orientation tracking - [x, y, z] of the target
+  # select: at least two of the axes have to be 1
+  ori_axis_weights: [1.0, 1.0, 1.0]
+
+  # scaling parameter between orientation and position
+  scale_pos_orient : 0.3
+
+  # parameters of the nullspace motion
+  alpha_null : [0., 0., -0., -0., 0., 0.0, 0.0] # activation per joint
+  h_delta : [0., 0., -0., -0., 0., 90., 40.]     # nominal configuration, aimed via nullspace motion
+  h_norm : [340., 240., 340., 240., 340., 240., 350.]  # normalization of the error for each joint (IIWA specific)

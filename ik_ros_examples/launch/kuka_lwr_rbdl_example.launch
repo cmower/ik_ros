@@ -5,29 +5,29 @@
 
   <!-- Figure of eight motion -->
   <node pkg="ik_ros_examples" name="figure_eight_motion" type="figure_eight_node.py">
+    <param name="hz" type="double" value="50"/>
     <param name="start_on_init" type="bool" value="false"/>
   </node>
 
   <!-- Connect figure of eight motion to world -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="motion_base_in_world"
-	args="-0.5 0 0.65 0 1.57 3.141 rpbi/world figure_eight_base"/>
+	args="-0.55 0.2 0.6 0 1.57 3.141 rpbi/world figure_eight_base"/>
 
   <!-- IK -->
   <!-- == -->
 
   <!-- Setup IK -->
-  <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="exotica" output="screen">
+  <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="rbdl" output="screen">
+    <param name="hz" type="double" value="100"/>
+    <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/lwr_arm_0_link"/>
+    <param name="child_frame_id" type="str" value="figure_eight"/>
     <param name="start_on_init" type="bool" value="false"/>
-    <rosparam param="sync_tf_to_exotica_object">[
-    "rpbi/kuka_lwr/base_link figure_eight '' Target",
-    ]</rosparam>
-    <remap from="ik/setup/exotica/start_state" to="rpbi/kuka_lwr/joint_states"/>
-    <remap from="ik/setup/exotica/previous_solutions" to="rpbi/kuka_lwr/joint_states/target"/>
+    <remap from="ik/setup/rbdl/current_position" to="rpbi/kuka_lwr/joint_states"/>
   </node>
 
   <!-- IK solver interface -->
-  <node pkg="ik_ros" name="ik_solver" type="ik_solver_node.py" args="exotica" output="screen">
-    <param name="xml_filename" type="str" value="{ik_ros_examples}/configs/kuka_lwr_exotica_example/kuka_lwr.xml"/>
+  <node pkg="ik_ros" name="ik_node" type="ik_solver_node.py" args="rbdl" output="screen">
+    <param name="config_filename" type="str" value="{ik_ros_examples}/configs/kuka_lwr_rbdl_example/ik_config.yaml"/>
     <param name="start_on_init" type="bool" value="false"/>
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
   </node>
@@ -37,7 +37,7 @@
 
   <!-- ROS-Pybullet interface node simulator -->
   <node pkg="ros_pybullet_interface" name="ros_pybullet_interface_node" type="ros_pybullet_interface_node.py">
-    <rosparam param="config" file="$(find ik_ros_examples)/configs/kuka_lwr_exotica_example/config.yaml"/>
+    <rosparam param="config" file="$(find ik_ros_examples)/configs/kuka_lwr_rbdl_example/config.yaml"/>
   </node>
 
   <!-- Visualization -->
@@ -46,7 +46,7 @@
   <!-- Run example -->
   <!-- =========== -->
 
-  <node pkg="ik_ros_examples" name="start" type="run_example.py" args="exotica">
+  <node pkg="ik_ros_examples" name="start" type="run_example.py" args="rbdl">
     <param name="robot_name" type="str" value="kuka_lwr"/>
     <param name="eff_name" type="str" value="lwr_arm_7_link"/>
   </node>

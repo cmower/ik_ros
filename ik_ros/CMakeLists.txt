@@ -18,6 +18,7 @@ add_message_files(
   TracIKProblem.msg
   IKSolution.msg
   EXOTicaSyncTf.msg
+  RBDLProblem.msg
 )
 
 add_service_files(
@@ -26,6 +27,7 @@ add_service_files(
   TracIK.srv
   JointNames.srv
   EXOTicaInfo.srv
+  RBDL.srv
   )
 
 generate_messages(
