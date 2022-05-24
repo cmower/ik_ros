@@ -17,6 +17,7 @@ from ros_pybullet_interface.srv import ResetEffState, ResetEffStateRequest
 from ros_pybullet_interface.srv import ResetJointState, ResetJointStateRequest
 from custom_ros_tools.ros_comm import get_srv_handler
 
+
 class Node:
 
     move_to_start_duration = 5.0
@@ -35,14 +36,18 @@ class Node:
         self.eff_name = rospy.get_param('~eff_name')
 
         # Get service handles
-        self.move_to_eff_state = get_srv_handler(f'rpbi/{self.robot_name}/move_to_eff_state', ResetEffState)
-        self.move_to_joint_state = get_srv_handler(f'rpbi/{self.robot_name}/move_to_joint_state', ResetJointState)
+        self.move_to_eff_state = get_srv_handler(
+            f'rpbi/{self.robot_name}/move_to_eff_state', ResetEffState)
+        self.move_to_joint_state = get_srv_handler(
+            f'rpbi/{self.robot_name}/move_to_joint_state', ResetJointState)
         self.start_figure_eight = get_srv_handler('toggle_figure_eight', SetBool)
-        self.start_ik_setup_node = get_srv_handler(f'ik/setup/{self.interface_name}/toggle', SetBool)
+        self.start_ik_setup_node = get_srv_handler(
+            f'ik/setup/{self.interface_name}/toggle', SetBool)
         self.move_to_start_pose = self.move_to_start_pose_using_pybullet
         self.solve_ik = None
         if self.interface_name != 'pybullet':
-            self.start_ik_solver_node = get_srv_handler(f'ik/solver/{self.interface_name}/toggle', SetBool)
+            self.start_ik_solver_node = get_srv_handler(
+                f'ik/solver/{self.interface_name}/toggle', SetBool)
             if self.interface_name == 'trac_ik':
                 srv_type = TracIK
                 self.interface_problem_type = TracIKProblem
@@ -56,7 +61,8 @@ class Node:
         self.toggle_remapper = None
         self.real_robot = rospy.get_param('real_robot', False)
         if self.real_robot:
-            self.toggle_remapper = get_srv_handler('remap_joint_state_to_floatarray/toggle', SetBool)
+            self.toggle_remapper = get_srv_handler(
+                'remap_joint_state_to_floatarray/toggle', SetBool)
             self.sync_pybullet_with_real_robot()
 
     def sync_pybullet_with_real_robot(self):
@@ -98,7 +104,6 @@ class Node:
 
         # Move robot
         self.move_to_eff_state(req)
-
 
     def setup_exotica_problem(self):
 
@@ -164,7 +169,6 @@ class Node:
             setattr(problem.goal.rotation, d, init_eff_rot[i])
         problem.goal.rotation.w = init_eff_rot[3]
         return problem
-
 
     def move_to_start_pose_using_interface(self):
         setup_problem = getattr(self, f'setup_{self.interface_name}_problem')

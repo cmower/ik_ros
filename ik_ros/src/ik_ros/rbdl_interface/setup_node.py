@@ -9,6 +9,7 @@ Original code by Theodoros Stouraitis (@stoutheo). Adapted by Chris E. Mower for
 
 """
 
+
 class RBDLSetupNode(IKSetupNode):
 
     problem_type = RBDLProblem
@@ -36,4 +37,5 @@ class RBDLSetupNode(IKSetupNode):
             self.problem.target_EE_transform = tf.transform
             return True
         else:
+            rospy.logwarn("failed to retrieve tf, cannot setup RBDL problem!")
             return False

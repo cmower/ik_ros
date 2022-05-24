@@ -17,14 +17,14 @@
 
   <!-- Setup IK -->
   <node pkg="ik_ros" name="ik_setup" type="ik_setup_node.py" args="rbdl" output="screen">
-    <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/base"/>
+    <param name="parent_frame_id" type="str" value="rpbi/kuka_lwr/lwr_arm_0_link"/>
     <param name="child_frame_id" type="str" value="figure_eight"/>
     <param name="start_on_init" type="bool" value="false"/>
     <remap from="ik/setup/rbdl/current_position" to="rpbi/kuka_lwr/joint_states"/>
   </node>
 
   <!-- IK solver interface -->
-  <node pkg="ik_ros" name="ik_solver_node" type="ik_solver_node.py" args="rbdl" output="screen">
+  <node pkg="ik_ros" name="ik_node" type="ik_solver_node.py" args="rbdl" output="screen">
     <param name="config_filename" type="str" value="{ik_ros_examples}/configs/kuka_lwr_rbdl_example/ik_config.yaml"/>
     <param name="start_on_init" type="bool" value="false"/>
     <remap from="joint_states/target" to="rpbi/kuka_lwr/joint_states/target"/>
