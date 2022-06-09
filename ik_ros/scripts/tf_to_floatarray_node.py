@@ -4,6 +4,7 @@ import tf_conversions
 from custom_ros_tools.tf import TfInterface
 from std_msgs.msg import Float64MultiArray
 
+
 class Node:
 
     def __init__(self):
@@ -28,7 +29,7 @@ class Node:
             raise ValueError("did not recognize mode! use either: 'pos', 'pos+eul', 'pos+quat'")
 
         # Setup ros publisher
-        self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=10)
+        self.pub = rospy.Publisher('transform', Float64MultiArray, queue_size=1)
 
         # Setup tf interface
         self.tf = TfInterface()
@@ -51,9 +52,11 @@ class Node:
 
         # Grab transform
         try:
-            tf = self.tfBuffer.lookup_transform(self.parent_frame_id, self.child_frame_id, rospy.Time())
+            tf=self.tfBuffer.lookup_transform(
+                self.parent_frame_id, self.child_frame_id, rospy.Time())
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logwarn('did not recieve transform %s in %s', self.child_frame_id, self.parent_frame_id)
+            rospy.logwarn('did not recieve transform %s in %s',
+                          self.child_frame_id, self.parent_frame_id)
             return
 
         # Publish transform as float array

@@ -10,6 +10,7 @@ parameters and sends it to the solver node.
 
 """
 
+
 class IKSetupNode(RosNode):
 
     def __init__(self, interface_name):
@@ -27,11 +28,11 @@ class IKSetupNode(RosNode):
         self.timer = None
 
         # Setup problem and publisher
-        self.pub = rospy.Publisher('ik', self.problem_type, queue_size=10)
+        self.pub = rospy.Publisher('ik', self.problem_type, queue_size=1)
         self.problem = self.problem_type()
 
         # Setup class attributes
-        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50))) # node sampling freq
+        self.duration = rospy.Duration(1.0/float(rospy.get_param('~hz', 50)))  # node sampling freq
 
     @property
     @abstractmethod

@@ -14,7 +14,6 @@ This script defines the main solver node.
 
 class IKSolverNode(RosNode):
 
-
     def __init__(self, IKInterfaceClass):
 
         # Initialize
@@ -28,8 +27,8 @@ class IKSolverNode(RosNode):
         self.sub = None
 
         # Setup ros publisher
-        self.targ_pub = rospy.Publisher('joint_states/target', JointState, queue_size=10)
-        self.soln_pub = rospy.Publisher('ik/solution', IKSolution, queue_size=10)
+        self.targ_pub = rospy.Publisher('joint_states/target', JointState, queue_size=1)
+        self.soln_pub = rospy.Publisher('ik/solution', IKSolution, queue_size=1)
 
         # Setup ros services
         rospy.Service(f'{self.ns}/solve', self.ik.srv_type, self.service_solve_ik)
@@ -39,7 +38,7 @@ class IKSolverNode(RosNode):
         self.post_init()
 
     ################################
-    ## Services
+    # Services
 
     def service_solve_ik(self, req):
         output = self.ik.solve(req.problem)
@@ -49,7 +48,7 @@ class IKSolverNode(RosNode):
         return JointNamesResponse(joint_names=self.ik.get_joint_names())
 
     ################################
-    ## Main subscriber
+    # Main subscriber
 
     def enable(self):
         if self.sub is None:
@@ -62,7 +61,6 @@ class IKSolverNode(RosNode):
             success = False
         return success, message
 
-
     def disable(self):
         if self.sub is not None:
             self.sub.unregister()
@@ -74,7 +72,6 @@ class IKSolverNode(RosNode):
             message = 'tried to unregister ik callback, but it is not registered'
             success = True
         return success, message
-
 
     def callback(self, problem):
         output = self.ik.solve(problem)
