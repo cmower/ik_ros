@@ -2,6 +2,7 @@ import rbdl
 import rospy
 import tf2_ros
 import numpy as np
+from urdf_parser_py import urdf
 from sensor_msgs.msg import JointState
 from scipy.spatial.transform import Rotation as R
 from custom_ros_tools.config import replace_package, load_config
@@ -29,6 +30,8 @@ class PyRBDLRobot:
         # TODO: consider if we can support non floating base robots
         file_name = replace_package(file_name)
         self.rbdlModel = rbdl.loadModel(file_name, verbose=True, floating_base=True)
+        with open(file_name, 'r') as f:
+            robot_urdf = urdf.Robot.from_xml_string(f.read())
 
         # Get end-effector body for rbdl
         self.rbdlEndEffectorID = rbdl.Model.GetBodyId(self.rbdlModel, end_effector_name)
@@ -60,12 +63,15 @@ class PyRBDLRobot:
         # build the name list of joints
         self.joint_name = []
         for i in range(len(self.rbdlModel.mJoints)):
-            # JointTypeRevolute
-            index = self.rbdlModel.mJoints[i].q_index
-            # the index 3 indicates the floating base
-            if index > 3:
-                # self.joint_name.append("Joint_"+str(index)+"_"+self.rbdlModel.mJoints[i].mJointType)
-                self.joint_name.append("lwr_arm_"+str(index-6)+"_joint")
+            if (robot_urdf.joints[i].joint_type != 'fixed'):
+                self.joint_name.append(robot_urdf.joints[i].name)
+
+            # old manual way with rbdl
+            # # JointTypeRevolute
+            # index = self.rbdlModel.mJoints[i].q_index
+            # # the index 3 indicates the floating base
+            # if index > 3:
+            #     self.joint_name.append("lwr_arm_"+str(index-6)+"_joint")
 
     def updateJointConfig(self, qNew):
         self.q[6:self.numJoints] = qNew
@@ -157,6 +163,7 @@ class PyRBDL4dIK:
         delta = self.computeDelta(globalTargetPos3D, globalTargetOri3D)
         JG = self.computeGlobalJacobian()
         self.fullDiffIK(JG, delta)
+        return delta
 
     """ --------------- Functions made for self use -------------------------"""
 
@@ -317,6 +324,10 @@ class RBDLInterface(IK):
         success = True
         message = 'solved RBDL IK problem'
 
+        print(problem.header.stamp)
+        print(rospy.Time.now())
+        print((problem.header.stamp-rospy.Time.now()).to_sec())
+        print("")
         # Extract transform from problem
         transform = problem.target_EE_transform
         target_EE_position = np.asarray(
@@ -325,13 +336,20 @@ class RBDLInterface(IK):
             [transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w]))
         target_EE_orientation = target_EE_ori.as_matrix()
 
+        # error = np.array([1, 1, 1, 1, 1, 1])
+        # counter = 0
+        # while (abs(error) > np.array([0.17, 0.17, 0.17, 0.01, 0.01, 0.001])).any():
         # Solve problem and update robotik
         try:
-            self.robotIK.fullDiffIKStep(target_EE_position, target_EE_orientation)
+            error = self.robotIK.fullDiffIKStep(target_EE_position, target_EE_orientation)
             solution = self.robotIK.robot.getJointConfig().tolist()
         except Exception as err:
             success = False
             message = 'failed to solve RBDL IK problem'
             solution = []
+
+        #     counter += 1
+        # print(error)
+        # print("counter ", counter)
 
         return IKOutput(success, message, self.get_joint_names(), solution)

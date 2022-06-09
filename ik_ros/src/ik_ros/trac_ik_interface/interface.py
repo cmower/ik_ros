@@ -7,6 +7,7 @@ from ik_ros.srv import TracIK, TracIKResponse
 from custom_ros_tools.config import replace_package
 from trac_ik_python.trac_ik_wrap import TRAC_IK
 
+
 class TracIKInterface(IK):
 
     """Interface to trac_ik: https://bitbucket.org/traclabs/trac_ik.git"""
@@ -34,12 +35,15 @@ class TracIKInterface(IK):
 
         rospy.loginfo('initialized TracIK server')
 
-
     def get_joint_names(self):
         return self._joint_names
 
-
     def solve(self, problem):
+
+        print(problem.header.stamp)
+        print(rospy.Time.now())
+        print((problem.header.stamp-rospy.Time.now()).to_sec())
+        print("")
 
         # Solve ik problem
         solution = self.ik_solver.CartToJnt(
